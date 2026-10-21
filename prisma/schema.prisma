@@ -1,0 +1,554 @@
+// Ambika Padavi Poorva College — database schema
+// Multi-branch institution: one parent organisation, many branch campuses,
+// each with its own courses, news, faculty, gallery, toppers and admissions.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+/// OWNER is the developer/proprietor account: unconditional full control.
+/// COLLEGE_ADMIN is college staff; every ability is granted explicitly by an
+/// OWNER through UserCapability rows and can be revoked at any time.
+enum Role {
+  OWNER
+  COLLEGE_ADMIN
+}
+
+/// Fine-grained abilities an OWNER can switch on or off per staff account.
+enum Capability {
+  NEWS_VIEW
+  NEWS_MANAGE
+  APPLICATION_VIEW
+  APPLICATION_MANAGE
+  APPLICATION_EXPORT
+  COURSE_MANAGE
+  FACULTY_MANAGE
+  GALLERY_MANAGE
+  TOPPER_MANAGE
+  PAGE_MANAGE
+  FAQ_MANAGE
+  CONTACT_VIEW
+  SETTINGS_MANAGE
+  AUDIT_VIEW
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  SHORTLISTED
+  ADMITTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum NewsCategory {
+  NEWS
+  NOTICE
+  EVENT
+  CIRCULAR
+  RESULT
+  ACHIEVEMENT
+}
+
+enum Stream {
+  SCIENCE
+  COMMERCE
+  ARTS
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Organisation
+// ---------------------------------------------------------------------------
+
+/// A campus/branch of the institution. Reachable at /{slug} today and at
+/// {slug}.rootdomain once BRANCH_ROUTING_MODE is flipped to "subdomain".
+model Branch {
+  id        String @id @default(cuid())
+  slug      String @unique
+  name      String
+  shortName String
+  tagline   String?
+
+  about           String?
+  establishedYear Int?
+  affiliation     String?
+  collegeCode     String?
+
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  district     String?
+  state        String?
+  pincode      String?
+
+  phone        String?
+  altPhone     String?
+  email        String?
+  mapEmbedUrl  String?
+  mapLink      String?
+  whatsappNo   String?
+
+  principalName     String?
+  principalMessage  String?
+  principalPhotoUrl String?
+
+  /// Branch accent colour (hex) so each campus reads as its own identity
+  /// while staying inside the parent institution's design system.
+  themeColor String @default("#7A1F2B")
+
+  admissionOpen Boolean @default(true)
+  admissionNote String?
+
+  orderIndex Int     @default(0)
+  isActive   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses       Course[]
+  news          NewsItem[]
+  applications  Application[]
+  faculty       Faculty[]
+  albums        GalleryAlbum[]
+  toppers       Topper[]
+  pages         PageContent[]
+  faqs          FaqEntry[]
+  heroSlides    HeroSlide[]
+  facilities    Facility[]
+  stats         StatItem[]
+  messages      ContactMessage[]
+  staffAccess   BranchAccess[]
+
+  @@index([isActive, orderIndex])
+}
+
+// ---------------------------------------------------------------------------
+// Accounts, roles and owner-controlled permissions
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String  @id @default(cuid())
+  name         String
+  email        String  @unique
+  phone        String?
+  passwordHash String
+  role         Role    @default(COLLEGE_ADMIN)
+  isActive     Boolean @default(true)
+
+  /// When true the account sees every branch; otherwise it is limited to the
+  /// branches listed in BranchAccess. OWNER accounts are always unrestricted.
+  allBranches Boolean @default(false)
+
+  mustChangePassword Boolean   @default(false)
+  lastLoginAt        DateTime?
+  /// Bumped to invalidate every existing session for this user at once.
+  sessionVersion     Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdById String?
+  createdBy   User?   @relation("UserCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdUsers User[] @relation("UserCreatedBy")
+
+  capabilities      UserCapability[]
+  branchAccess      BranchAccess[]
+  authoredNews      NewsItem[]
+  reviewedApps      Application[]
+  auditLogs         AuditLog[]
+
+  @@index([role, isActive])
+}
+
+/// One row per ability granted to a staff account. Deleting the row revokes
+/// the ability immediately — enforcement reads the database, not the cookie.
+model UserCapability {
+  id         String     @id @default(cuid())
+  userId     String
+  capability Capability
+  grantedAt  DateTime   @default(now())
+  grantedById String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, capability])
+  @@index([userId])
+}
+
+/// Limits a staff account to specific branches.
+model BranchAccess {
+  id       String @id @default(cuid())
+  userId   String
+  branchId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, branchId])
+  @@index([branchId])
+}
+
+// ---------------------------------------------------------------------------
+// Academics
+// ---------------------------------------------------------------------------
+
+model Course {
+  id       String  @id @default(cuid())
+  branchId String
+  code     String
+  name     String
+  stream   Stream
+  /// Subject combination, e.g. ["Physics","Chemistry","Mathematics","Biology"]
+  subjects String[]
+
+  description String?
+  eligibility String?
+  durationYears Int   @default(2)
+  intake        Int?
+  annualFee     Int?
+
+  orderIndex Int     @default(0)
+  isActive   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@unique([branchId, code])
+  @@index([branchId, isActive, orderIndex])
+}
+
+model Faculty {
+  id       String  @id @default(cuid())
+  branchId String
+  name     String
+  designation   String
+  department    String?
+  qualification String?
+  experienceYears Int?
+  email    String?
+  photoUrl String?
+  bio      String?
+
+  orderIndex Int     @default(0)
+  isActive   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, isActive, orderIndex])
+}
+
+model Topper {
+  id           String  @id @default(cuid())
+  branchId     String
+  studentName  String
+  photoUrl     String?
+  academicYear String
+  stream       Stream
+  percentage   Float
+  marksObtained Int?
+  totalMarks    Int?
+  rankLabel     String?
+  remarks       String?
+
+  orderIndex Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, academicYear, orderIndex])
+}
+
+// ---------------------------------------------------------------------------
+// News, notices and the scrolling ticker
+// ---------------------------------------------------------------------------
+
+model NewsItem {
+  id       String       @id @default(cuid())
+  /// null = institution-wide item shown on the main site and both branches.
+  branchId String?
+  title    String
+  slug     String       @unique
+  category NewsCategory @default(NEWS)
+  summary  String?
+  body     String?
+  linkUrl        String?
+  attachmentUrl  String?
+  coverImageUrl  String?
+
+  /// Include this item in the continuously scrolling headline ticker.
+  isTicker    Boolean  @default(false)
+  isPinned    Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  /// After this moment the item stops appearing on the public site.
+  expiresAt   DateTime?
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  branch    Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdBy User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([isPublished, publishedAt(sort: Desc)])
+  @@index([branchId, isPublished, publishedAt(sort: Desc)])
+  @@index([isTicker, isPublished, publishedAt(sort: Desc)])
+  @@index([category, isPublished, publishedAt(sort: Desc)])
+}
+
+// ---------------------------------------------------------------------------
+// Admissions
+// ---------------------------------------------------------------------------
+
+model Application {
+  id            String @id @default(cuid())
+  /// Human-facing reference, e.g. AMB-NLK-2026-00042
+  applicationNo String @unique
+  branchId      String
+  courseId      String?
+
+  studentName String
+  dateOfBirth DateTime
+  gender      Gender
+  email       String
+  phone       String
+  altPhone    String?
+  aadhaarLast4 String?
+
+  fatherName    String?
+  motherName    String?
+  guardianPhone String?
+  guardianOccupation String?
+
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  district     String?
+  state        String?
+  pincode      String?
+
+  category    String?
+  religion    String?
+  nationality String? @default("Indian")
+
+  sslcBoard       String?
+  sslcSchool      String?
+  sslcRegisterNo  String?
+  sslcYear        Int?
+  sslcPercentage  Float?
+  preferredCombination String?
+
+  remarksFromApplicant String?
+
+  status       ApplicationStatus @default(SUBMITTED)
+  /// Office-only notes; never exposed on the public site.
+  internalNotes String?
+  reviewedById String?
+  reviewedAt   DateTime?
+
+  /// Hashed, not raw — enough to spot abuse without storing visitor IPs.
+  submitterIpHash String?
+  userAgent       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch     Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  course     Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  reviewedBy User?    @relation(fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([branchId, status, createdAt(sort: Desc)])
+  @@index([branchId, createdAt(sort: Desc)])
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Media and page content
+// ---------------------------------------------------------------------------
+
+model GalleryAlbum {
+  id       String  @id @default(cuid())
+  branchId String?
+  title    String
+  slug     String  @unique
+  description   String?
+  coverImageUrl String?
+  eventDate     DateTime?
+  isPublished   Boolean  @default(true)
+  orderIndex    Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch?        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  images GalleryImage[]
+
+  @@index([branchId, isPublished, orderIndex])
+}
+
+model GalleryImage {
+  id      String @id @default(cuid())
+  albumId String
+  url     String
+  caption String?
+  width   Int?
+  height  Int?
+  orderIndex Int @default(0)
+
+  album GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId, orderIndex])
+}
+
+model HeroSlide {
+  id       String  @id @default(cuid())
+  branchId String?
+  imageUrl String
+  headline String?
+  subtext  String?
+  ctaLabel String?
+  ctaUrl   String?
+  orderIndex Int     @default(0)
+  isActive   Boolean @default(true)
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, isActive, orderIndex])
+}
+
+model Facility {
+  id       String  @id @default(cuid())
+  branchId String?
+  title    String
+  description String?
+  icon     String?
+  imageUrl String?
+  orderIndex Int @default(0)
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, orderIndex])
+}
+
+model StatItem {
+  id       String  @id @default(cuid())
+  branchId String?
+  label    String
+  value    Int
+  suffix   String?
+  orderIndex Int @default(0)
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, orderIndex])
+}
+
+/// Editable prose blocks so staff can change wording without a deploy.
+model PageContent {
+  id       String  @id @default(cuid())
+  branchId String?
+  /// Stable identifier used by the page that renders it, e.g. "about".
+  key      String
+  title    String?
+  body     String
+
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, key])
+  @@index([key])
+}
+
+// ---------------------------------------------------------------------------
+// Chatbot knowledge base, enquiries and operational records
+// ---------------------------------------------------------------------------
+
+model FaqEntry {
+  id       String  @id @default(cuid())
+  branchId String?
+  question String
+  answer   String
+  /// Matching terms used by the rule-based chatbot's scorer.
+  keywords String[]
+  category String?
+  orderIndex Int     @default(0)
+  isActive   Boolean @default(true)
+  /// How often this answer has been served; surfaces gaps to the admin.
+  hitCount   Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, isActive, orderIndex])
+}
+
+model ContactMessage {
+  id       String  @id @default(cuid())
+  branchId String?
+  name     String
+  email    String?
+  phone    String
+  subject  String?
+  message  String
+  isRead   Boolean @default(false)
+  submitterIpHash String?
+
+  createdAt DateTime @default(now())
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@index([isRead, createdAt(sort: Desc)])
+}
+
+model AuditLog {
+  id       String  @id @default(cuid())
+  userId   String?
+  action   String
+  entity   String
+  entityId String?
+  summary  String?
+  ipHash   String?
+
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
