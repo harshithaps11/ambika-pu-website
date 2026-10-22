@@ -57,7 +57,7 @@ export default async function HomePage() {
 
       <QuickLinks
         tiles={[
-          { label: "Admissions", href: "/#campuses", icon: "admission" },
+          { label: "Admissions", href: "/#admissions", icon: "admission" },
           { label: "Courses", href: "/#campuses", icon: "course" },
           { label: "Results", href: "/news?category=RESULT", icon: "result" },
           { label: "Gallery", href: "/gallery", icon: "gallery" },
@@ -211,7 +211,8 @@ export default async function HomePage() {
 
       {/* Admission call to action */}
       <section
-        className="py-12"
+        id="admissions"
+        className="scroll-mt-16 py-12"
         style={{ backgroundColor: "var(--branch-color)" }}
       >
         <div className="container-site flex flex-col items-center gap-6 text-center lg:flex-row lg:justify-between lg:text-left">

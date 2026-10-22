@@ -7,9 +7,8 @@ import { OrganizationSchema } from "@/components/site/structured-data";
 import { TopUtilityBar } from "@/components/site/top-utility-bar";
 import { site } from "@/config/site";
 import { branchHref } from "@/lib/branch-routing";
-import { getBranchIndex } from "@/lib/data/branches";
+import { getBranchIndex, getBranchSchema } from "@/lib/data/branches";
 import { getTickerItems } from "@/lib/data/news";
-import { prisma } from "@/lib/prisma";
 
 export default async function PublicLayout({
   children,
@@ -44,7 +43,7 @@ export default async function PublicLayout({
     },
     {
       label: "Admissions",
-      href: "/#campuses",
+      href: "/#admissions",
       children: branches.map((branch) => ({
         label: `Apply — ${branch.shortName}`,
         href: branchHref(branch.slug, "/admissions"),
@@ -62,21 +61,7 @@ export default async function PublicLayout({
     { label: "Contact Us", href: "/contact" },
   ];
 
-  const branchSchema = await prisma.branch.findMany({
-    where: { isActive: true },
-    orderBy: { orderIndex: "asc" },
-    select: {
-      slug: true,
-      name: true,
-      city: true,
-      district: true,
-      state: true,
-      pincode: true,
-      addressLine1: true,
-      phone: true,
-      email: true,
-    },
-  });
+  const branchSchema = await getBranchSchema();
 
   return (
     <>

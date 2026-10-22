@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/config/site";
 import { prisma } from "@/lib/prisma";
 
+import { isDatabaseConfigured, MOCK_ALBUMS, MOCK_BRANCHES, MOCK_NEWS } from "@/lib/data/mock-data";
+
 export const revalidate = 3600;
 
 /**
@@ -12,26 +14,50 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
   const now = new Date();
 
-  const [branches, news, albums] = await Promise.all([
-    prisma.branch.findMany({
-      where: { isActive: true },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.newsItem.findMany({
-      where: {
-        isPublished: true,
-        publishedAt: { lte: now },
-        OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
-      },
-      orderBy: { publishedAt: "desc" },
-      take: 500,
-      select: { slug: true, updatedAt: true, branch: { select: { slug: true } } },
-    }),
-    prisma.galleryAlbum.findMany({
-      where: { isPublished: true },
-      select: { slug: true, updatedAt: true },
-    }),
-  ]);
+  let branches: { slug: string; updatedAt: Date }[] = [];
+  let news: { slug: string; updatedAt: Date; branch: { slug: string } | null }[] = [];
+  let albums: { slug: string; updatedAt: Date }[] = [];
+
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({ slug: b.slug, updatedAt: b.updatedAt }));
+    news = MOCK_NEWS.map((n) => ({
+      slug: n.slug,
+      updatedAt: n.publishedAt,
+      branch: n.branch ? { slug: n.branch.slug } : null,
+    }));
+    albums = MOCK_ALBUMS.map((a) => ({ slug: a.slug, updatedAt: a.updatedAt }));
+  } else {
+    try {
+      [branches, news, albums] = await Promise.all([
+        prisma.branch.findMany({
+          where: { isActive: true },
+          select: { slug: true, updatedAt: true },
+        }),
+        prisma.newsItem.findMany({
+          where: {
+            isPublished: true,
+            publishedAt: { lte: now },
+            OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+          },
+          orderBy: { publishedAt: "desc" },
+          take: 500,
+          select: { slug: true, updatedAt: true, branch: { select: { slug: true } } },
+        }),
+        prisma.galleryAlbum.findMany({
+          where: { isPublished: true },
+          select: { slug: true, updatedAt: true },
+        }),
+      ]);
+    } catch {
+      branches = MOCK_BRANCHES.map((b) => ({ slug: b.slug, updatedAt: b.updatedAt }));
+      news = MOCK_NEWS.map((n) => ({
+        slug: n.slug,
+        updatedAt: n.publishedAt,
+        branch: n.branch ? { slug: n.branch.slug } : null,
+      }));
+      albums = MOCK_ALBUMS.map((a) => ({ slug: a.slug, updatedAt: a.updatedAt }));
+    }
+  }
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },

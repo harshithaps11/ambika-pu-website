@@ -60,7 +60,7 @@ export function NewsTicker({
       className="border-b border-black/20"
       style={{ backgroundColor: "var(--branch-color-dark)" }}
     >
-      <div className="container-site flex items-stretch">
+      <div className="container-wide flex items-stretch">
         <p className="flex shrink-0 items-center gap-2 bg-gold-500 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-ink-900">
           <span
             className="inline-block h-1.5 w-1.5 rounded-full bg-brand-800"

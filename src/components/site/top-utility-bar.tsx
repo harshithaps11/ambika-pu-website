@@ -25,7 +25,7 @@ export function TopUtilityBar({
 
   return (
     <div className="hidden border-b border-white/10 bg-ink-900 text-white md:block">
-      <div className="container-site flex h-9 items-center justify-between gap-6 text-[0.72rem]">
+      <div className="container-wide flex h-9 items-center justify-between gap-6 text-[0.72rem]">
         <div className="flex items-center gap-5">
           <a
             href={telHref(displayPhone)}

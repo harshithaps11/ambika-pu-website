@@ -24,7 +24,7 @@ export function SiteFooter({
 
   return (
     <footer className="mt-auto bg-ink-900 text-white/70">
-      <div className="container-site grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+      <div className="container-wide grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
         <div className="lg:pr-6">
           <div className="flex items-center gap-3">
             <Crest className="h-12 text-white/90" />
@@ -106,7 +106,7 @@ export function SiteFooter({
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-site flex flex-col items-center justify-between gap-2 py-4 text-[0.75rem] sm:flex-row">
+        <div className="container-wide flex flex-col items-center justify-between gap-2 py-4 text-[0.75rem] sm:flex-row">
           <p>
             © {year} {site.name}. All rights reserved.
           </p>

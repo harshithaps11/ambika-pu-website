@@ -16,7 +16,7 @@ export function PageHeader({
       className="border-b-4 border-gold-500 py-8 sm:py-10"
       style={{ backgroundColor: "var(--branch-color-dark)" }}
     >
-      <div className="container-site">
+      <div className="container-wide">
         {crumbs.length ? (
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-1.5 text-[0.74rem] text-white/60">

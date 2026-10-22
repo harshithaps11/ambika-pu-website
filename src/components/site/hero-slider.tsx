@@ -58,7 +58,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
         if (event.key === "ArrowLeft") go(index - 1);
       }}
     >
-      <div className="relative h-[330px] sm:h-[420px] lg:h-[500px]">
+      <div className="relative h-[340px] sm:h-[440px] lg:h-[540px] xl:h-[580px]">
         {slides.map((slide, slideIndex) => (
           <div
             key={slide.id}
@@ -78,16 +78,16 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
           </div>
         ))}
 
-        <div className="container-site relative flex h-full flex-col justify-center">
-          <div className="max-w-2xl">
+        <div className="container-wide relative flex h-full flex-col justify-center">
+          <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl">
             {slides[index].headline ? (
-              <h1 className="font-serif text-[1.65rem] font-semibold leading-tight text-white drop-shadow-sm sm:text-[2.3rem] lg:text-[2.7rem]">
+              <h1 className="font-serif text-[1.85rem] font-semibold leading-tight text-white drop-shadow-sm sm:text-[2.6rem] lg:text-[3.2rem] xl:text-[3.6rem]">
                 {slides[index].headline}
               </h1>
             ) : null}
 
             {slides[index].subtext ? (
-              <p className="mt-3 max-w-xl text-[0.9rem] leading-relaxed text-white/85 sm:mt-4 sm:text-base">
+              <p className="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-white/90 sm:mt-4 sm:text-lg">
                 {slides[index].subtext}
               </p>
             ) : null}
@@ -95,7 +95,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
             {slides[index].ctaUrl && slides[index].ctaLabel ? (
               <Link
                 href={slides[index].ctaUrl}
-                className="mt-5 inline-flex h-11 items-center rounded-sm bg-gold-500 px-6 text-[0.82rem] font-bold uppercase tracking-wider text-ink-900 transition-colors hover:bg-gold-400 sm:mt-7"
+                className="mt-5 inline-flex h-11 items-center rounded-sm bg-gold-500 px-7 text-[0.85rem] font-bold uppercase tracking-wider text-ink-900 transition-colors hover:bg-gold-400 sm:mt-7"
               >
                 {slides[index].ctaLabel}
               </Link>

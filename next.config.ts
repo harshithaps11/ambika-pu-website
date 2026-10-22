@@ -20,7 +20,10 @@ const nextConfig: NextConfig = {
 
   turbopack: {
     rules: {
-      "*.css": {
+      // Scope to project CSS only — using *.css would also match
+      // Next.js internal font CSS ([next]/internal/font/google/...)
+      // and break next/font/google resolution.
+      "./src/**/*.css": {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },

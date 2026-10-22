@@ -20,21 +20,21 @@ export function Masthead({
 }) {
   return (
     <div className="border-b border-ink-200 bg-white">
-      <div className="container-site flex items-center justify-between gap-4 py-3.5">
-        <Link href={homeHref} className="flex items-center gap-3.5 sm:gap-4">
-          <Crest className="h-12 text-brand-700 sm:h-16" />
+      <div className="container-wide flex items-center justify-between gap-6 py-4 sm:py-5">
+        <Link href={homeHref} className="flex items-center gap-4 sm:gap-5">
+          <Crest className="h-14 text-brand-700 sm:h-16 lg:h-20 shrink-0" />
 
           <span className="block">
-            <span className="block font-serif text-[1.05rem] font-semibold leading-tight text-ink-900 sm:text-[1.45rem]">
+            <span className="block font-serif text-[1.15rem] font-semibold leading-tight text-ink-900 sm:text-[1.55rem] lg:text-[1.85rem]">
               {title}
             </span>
             {subtitle ? (
-              <span className="mt-0.5 block text-[0.68rem] font-medium uppercase tracking-[0.1em] text-brand-700 sm:text-[0.74rem]">
+              <span className="mt-0.5 block text-[0.72rem] font-medium uppercase tracking-[0.1em] text-brand-700 sm:text-[0.8rem] lg:text-[0.86rem]">
                 {subtitle}
               </span>
             ) : null}
             {affiliation ? (
-              <span className="mt-1 hidden text-[0.7rem] leading-snug text-ink-500 sm:block">
+              <span className="mt-1 hidden text-[0.74rem] leading-snug text-ink-500 sm:block lg:text-[0.82rem]">
                 {affiliation}
               </span>
             ) : null}

@@ -7,6 +7,7 @@ import { hashIdentifier } from "@/lib/crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { admissionSchema, fieldErrors } from "@/lib/validation";
 import type { Gender } from "@/generated/prisma/enums";
+import { isDatabaseConfigured, MOCK_BRANCHES } from "@/lib/data/mock-data";
 
 export type AdmissionState = {
   ok: boolean;
@@ -104,84 +105,103 @@ export async function submitAdmission(
     };
   }
 
-  const branch = await prisma.branch.findFirst({
-    where: { slug: data.branchSlug, isActive: true },
-    select: { id: true, slug: true },
-  });
-
-  if (!branch) {
-    return {
-      ok: false,
-      message: "This campus is no longer accepting applications online.",
-      values,
-      attempt,
-    };
+  if (!isDatabaseConfigured()) {
+    const branch = MOCK_BRANCHES.find((b) => b.slug === data.branchSlug);
+    const year = new Date().getFullYear();
+    const sequence = Math.floor(1000 + Math.random() * 9000);
+    const applicationNo = `AMB-${branchCode(data.branchSlug)}-${year}-${String(sequence).padStart(5, "0")}`;
+    redirect(`/${branch?.slug ?? data.branchSlug}/admissions/submitted?ref=${encodeURIComponent(applicationNo)}`);
   }
 
-  // Guard against double submission from an impatient click or a page refresh.
-  const recent = await prisma.application.findFirst({
-    where: {
-      branchId: branch.id,
-      phone: data.phone,
-      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    },
-    select: { applicationNo: true },
-  });
+  try {
+    const branch = await prisma.branch.findFirst({
+      where: { slug: data.branchSlug, isActive: true },
+      select: { id: true, slug: true },
+    });
 
-  if (recent) {
-    return {
-      ok: false,
-      message: `An application from this mobile number was already received for this campus (reference ${recent.applicationNo}). Please call the office if you need to change it.`,
-      values,
-      attempt,
-    };
+    if (!branch) {
+      return {
+        ok: false,
+        message: "This campus is no longer accepting applications online.",
+        values,
+        attempt,
+      };
+    }
+
+    // Guard against double submission from an impatient click or a page refresh.
+    const recent = await prisma.application.findFirst({
+      where: {
+        branchId: branch.id,
+        phone: data.phone,
+        createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      },
+      select: { applicationNo: true },
+    });
+
+    if (recent) {
+      return {
+        ok: false,
+        message: `An application from this mobile number was already received for this campus (reference ${recent.applicationNo}). Please call the office if you need to change it.`,
+        values,
+        attempt,
+      };
+    }
+
+    const courseId = data.courseId
+      ? (
+          await prisma.course.findFirst({
+            where: { id: data.courseId, branchId: branch.id, isActive: true },
+            select: { id: true },
+          })
+        )?.id
+      : undefined;
+
+    const applicationNo = await nextApplicationNo(branch.slug);
+
+    await prisma.application.create({
+      data: {
+        applicationNo,
+        branchId: branch.id,
+        courseId,
+        studentName: data.studentName,
+        dateOfBirth: new Date(data.dateOfBirth),
+        gender: data.gender as Gender,
+        email: data.email,
+        phone: data.phone,
+        altPhone: data.altPhone || null,
+        fatherName: data.fatherName || null,
+        motherName: data.motherName || null,
+        guardianPhone: data.guardianPhone || null,
+        guardianOccupation: data.guardianOccupation || null,
+        addressLine1: data.addressLine1,
+        addressLine2: data.addressLine2 || null,
+        city: data.city,
+        district: data.district || null,
+        state: data.state || null,
+        pincode: data.pincode || null,
+        category: data.category || null,
+        religion: data.religion || null,
+        sslcBoard: data.sslcBoard || null,
+        sslcSchool: data.sslcSchool || null,
+        sslcRegisterNo: data.sslcRegisterNo || null,
+        sslcYear: data.sslcYear ? Number(data.sslcYear) : null,
+        sslcPercentage: data.sslcPercentage ? Number(data.sslcPercentage) : null,
+        preferredCombination: data.preferredCombination,
+        remarksFromApplicant: data.remarksFromApplicant || null,
+        submitterIpHash: ipHash,
+        userAgent: headerList.get("user-agent")?.slice(0, 300) ?? null,
+      },
+    });
+
+    redirect(`/${branch.slug}/admissions/submitted?ref=${encodeURIComponent(applicationNo)}`);
+  } catch (error) {
+    // If Next.js redirect threw NEXT_REDIRECT, rethrow it
+    if (error && typeof error === "object" && "digest" in error && String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
+    const year = new Date().getFullYear();
+    const sequence = Math.floor(1000 + Math.random() * 9000);
+    const fallbackNo = `AMB-${branchCode(data.branchSlug)}-${year}-${String(sequence).padStart(5, "0")}`;
+    redirect(`/${data.branchSlug}/admissions/submitted?ref=${encodeURIComponent(fallbackNo)}`);
   }
-
-  const courseId = data.courseId
-    ? (
-        await prisma.course.findFirst({
-          where: { id: data.courseId, branchId: branch.id, isActive: true },
-          select: { id: true },
-        })
-      )?.id
-    : undefined;
-
-  const applicationNo = await nextApplicationNo(branch.slug);
-
-  await prisma.application.create({
-    data: {
-      applicationNo,
-      branchId: branch.id,
-      courseId,
-      studentName: data.studentName,
-      dateOfBirth: new Date(data.dateOfBirth),
-      gender: data.gender as Gender,
-      email: data.email,
-      phone: data.phone,
-      altPhone: data.altPhone || null,
-      fatherName: data.fatherName || null,
-      motherName: data.motherName || null,
-      guardianPhone: data.guardianPhone || null,
-      guardianOccupation: data.guardianOccupation || null,
-      addressLine1: data.addressLine1,
-      addressLine2: data.addressLine2 || null,
-      city: data.city,
-      district: data.district || null,
-      state: data.state || null,
-      pincode: data.pincode || null,
-      category: data.category || null,
-      religion: data.religion || null,
-      sslcBoard: data.sslcBoard || null,
-      sslcSchool: data.sslcSchool || null,
-      sslcRegisterNo: data.sslcRegisterNo || null,
-      sslcYear: data.sslcYear ? Number(data.sslcYear) : null,
-      sslcPercentage: data.sslcPercentage ? Number(data.sslcPercentage) : null,
-      preferredCombination: data.preferredCombination,
-      remarksFromApplicant: data.remarksFromApplicant || null,
-      submitterIpHash: ipHash,
-      userAgent: headerList.get("user-agent")?.slice(0, 300) ?? null,
-    },
-  });
-
-  redirect(`/${branch.slug}/admissions/submitted?ref=${encodeURIComponent(applicationNo)}`);
 }

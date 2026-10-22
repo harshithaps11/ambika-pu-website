@@ -26,12 +26,12 @@ const icons = {
 export function QuickLinks({ tiles }: { tiles: Tile[] }) {
   return (
     <nav aria-label="Quick links" className="border-b border-ink-200 bg-ink-50">
-      <ul className="container-site grid grid-cols-2 gap-px bg-ink-200 sm:grid-cols-3 lg:grid-cols-6">
+      <ul className="container-wide grid grid-cols-2 gap-px bg-ink-200 sm:grid-cols-3 lg:grid-cols-6">
         {tiles.map((tile) => (
-          <li key={tile.href}>
+          <li key={`${tile.label}-${tile.href}`}>
             <Link
               href={tile.href}
-              className="flex h-full flex-col items-center gap-2 bg-ink-50 px-3 py-5 text-center transition-colors hover:bg-white"
+              className="flex h-full flex-col items-center gap-2.5 bg-ink-50 px-4 py-6 text-center transition-colors hover:bg-white"
             >
               <span
                 className="flex h-10 w-10 items-center justify-center rounded-full text-white"

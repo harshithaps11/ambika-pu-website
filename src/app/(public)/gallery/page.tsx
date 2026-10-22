@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/page-header";
-import { prisma } from "@/lib/prisma";
+import { getAlbums } from "@/lib/data/content";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 600;
@@ -13,15 +13,7 @@ export const metadata: Metadata = {
 
 export default async function GalleryIndexPage() {
   // The main site shows albums from every campus plus institution-wide ones.
-  const albums = await prisma.galleryAlbum.findMany({
-    where: { isPublished: true },
-    orderBy: [{ orderIndex: "asc" }, { eventDate: "desc" }],
-    include: {
-      branch: { select: { shortName: true } },
-      images: { orderBy: { orderIndex: "asc" }, take: 1 },
-      _count: { select: { images: true } },
-    },
-  });
+  const albums = await getAlbums(null, 50);
 
   return (
     <>

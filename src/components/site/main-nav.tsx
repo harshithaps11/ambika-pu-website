@@ -57,25 +57,26 @@ export function MainNav({
       className="sticky top-0 z-40 shadow-sm"
       style={{ backgroundColor: "var(--branch-color)" }}
     >
-      <div className="container-site flex items-stretch justify-between">
+      <div className="container-wide flex items-stretch justify-between">
         <ul className="hidden items-stretch lg:flex">
           {items.map((item) => {
             const active = isActive(item.href);
             const hasChildren = Boolean(item.children?.length);
+            const itemKey = `${item.label}-${item.href}`;
 
             return (
               <li
-                key={item.href}
+                key={itemKey}
                 className="relative"
-                onMouseEnter={() => hasChildren && setOpenMenu(item.href)}
+                onMouseEnter={() => hasChildren && setOpenMenu(itemKey)}
                 onMouseLeave={() => hasChildren && setOpenMenu(null)}
               >
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  aria-expanded={hasChildren ? openMenu === item.href : undefined}
+                  aria-expanded={hasChildren ? openMenu === itemKey : undefined}
                   className={cn(
-                    "flex h-11 items-center gap-1.5 px-3.5 text-[0.78rem] font-semibold uppercase tracking-[0.06em] text-white/90 transition-colors hover:bg-black/20 hover:text-white",
+                    "flex h-12 lg:h-13 items-center gap-2 px-4 lg:px-5 xl:px-6 text-[0.8rem] lg:text-[0.85rem] font-semibold uppercase tracking-[0.06em] text-white/95 transition-colors hover:bg-black/20 hover:text-white",
                     active && "bg-black/25 text-white",
                   )}
                 >
@@ -85,17 +86,17 @@ export function MainNav({
 
                 {hasChildren ? (
                   <ul
-                    id={`${menuId}-${item.href}`}
+                    id={`${menuId}-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                     className={cn(
-                      "absolute left-0 top-full z-50 w-60 border-t-2 border-gold-500 bg-white py-1 shadow-raise",
-                      openMenu === item.href ? "block" : "hidden",
+                      "absolute left-0 top-full z-50 w-64 border-t-2 border-gold-500 bg-white py-1.5 shadow-raise",
+                      openMenu === itemKey ? "block" : "hidden",
                     )}
                   >
                     {item.children?.map((child) => (
-                      <li key={child.href}>
+                      <li key={`${child.label}-${child.href}`}>
                         <Link
                           href={child.href}
-                          className="block px-4 py-2 text-[0.82rem] text-ink-700 transition-colors hover:bg-ink-50 hover:text-brand-700"
+                          className="block px-4 py-2.5 text-[0.84rem] text-ink-700 transition-colors hover:bg-ink-50 hover:text-brand-700"
                         >
                           {child.label}
                         </Link>
@@ -113,7 +114,7 @@ export function MainNav({
           onClick={() => setMobileOpen((open) => !open)}
           aria-expanded={mobileOpen}
           aria-controls={menuId}
-          className="flex h-11 items-center gap-2 px-1 text-[0.8rem] font-semibold uppercase tracking-wider text-white lg:hidden"
+          className="flex h-12 items-center gap-2 px-1 text-[0.8rem] font-semibold uppercase tracking-wider text-white lg:hidden"
         >
           <BurgerIcon open={mobileOpen} />
           Menu
@@ -122,7 +123,7 @@ export function MainNav({
         {ctaHref ? (
           <Link
             href={ctaHref}
-            className="my-1.5 ml-auto hidden items-center rounded-sm bg-gold-500 px-4 text-[0.78rem] font-bold uppercase tracking-wider text-ink-900 transition-colors hover:bg-gold-400 lg:flex"
+            className="my-2 ml-auto hidden items-center rounded-sm bg-gold-500 px-5 text-[0.82rem] font-bold uppercase tracking-wider text-ink-900 transition-colors hover:bg-gold-400 lg:flex"
           >
             {ctaLabel}
           </Link>
@@ -139,7 +140,7 @@ export function MainNav({
       >
         <ul className="container-site py-2">
           {items.map((item) => (
-            <li key={item.href} className="border-b border-white/10 last:border-0">
+            <li key={`${item.label}-${item.href}`} className="border-b border-white/10 last:border-0">
               <Link
                 href={item.href}
                 className="block py-2.5 text-sm font-semibold text-white"
@@ -150,7 +151,7 @@ export function MainNav({
               {item.children?.length ? (
                 <ul className="pb-2 pl-3">
                   {item.children.map((child) => (
-                    <li key={child.href}>
+                    <li key={`${child.label}-${child.href}`}>
                       <Link
                         href={child.href}
                         className="block py-1.5 text-[0.82rem] text-white/75"
