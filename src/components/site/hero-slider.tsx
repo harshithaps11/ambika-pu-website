@@ -58,7 +58,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
         if (event.key === "ArrowLeft") go(index - 1);
       }}
     >
-      <div className="relative h-[340px] sm:h-[440px] lg:h-[540px] xl:h-[580px]">
+      <div className="relative h-[440px] sm:h-[540px] lg:h-[640px] xl:h-[700px]">
         {slides.map((slide, slideIndex) => (
           <div
             key={slide.id}
@@ -74,11 +74,12 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
           >
             {/* Left-weighted scrim: keeps the headline readable without
                 flattening the whole picture. */}
-            <div className="absolute inset-0 bg-gradient-to-r from-ink-900/85 via-ink-900/55 to-ink-900/15" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ink-950/85 via-ink-900/55 to-ink-900/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-transparent" />
           </div>
         ))}
 
-        <div className="container-wide relative flex h-full flex-col justify-center">
+        <div className="container-wide relative flex h-full flex-col justify-center pb-16 sm:pb-20 lg:pb-28">
           <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl">
             {slides[index].headline ? (
               <h1 className="font-serif text-[1.85rem] font-semibold leading-tight text-white drop-shadow-sm sm:text-[2.6rem] lg:text-[3.2rem] xl:text-[3.6rem]">
@@ -109,7 +110,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
               type="button"
               onClick={() => go(index - 1)}
               aria-label="Previous slide"
-              className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm bg-black/35 text-white transition-colors hover:bg-black/60 sm:flex"
+              className="absolute left-2 top-[44%] hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm bg-black/35 text-white transition-colors hover:bg-black/60 sm:flex"
             >
               <Arrow direction="left" />
             </button>
@@ -117,12 +118,12 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
               type="button"
               onClick={() => go(index + 1)}
               aria-label="Next slide"
-              className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm bg-black/35 text-white transition-colors hover:bg-black/60 sm:flex"
+              className="absolute right-2 top-[44%] hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm bg-black/35 text-white transition-colors hover:bg-black/60 sm:flex"
             >
               <Arrow direction="right" />
             </button>
 
-            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+            <div className="absolute bottom-16 sm:bottom-20 lg:bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-2">
               {slides.map((slide, slideIndex) => (
                 <button
                   key={slide.id}

@@ -25,29 +25,43 @@ const icons = {
 
 export function QuickLinks({ tiles }: { tiles: Tile[] }) {
   return (
-    <nav aria-label="Quick links" className="border-b border-ink-200 bg-ink-50">
-      <ul className="container-wide grid grid-cols-2 gap-px bg-ink-200 sm:grid-cols-3 lg:grid-cols-6">
-        {tiles.map((tile) => (
-          <li key={`${tile.label}-${tile.href}`}>
-            <Link
-              href={tile.href}
-              className="flex h-full flex-col items-center gap-2.5 bg-ink-50 px-4 py-6 text-center transition-colors hover:bg-white"
-            >
-              <span
-                className="flex h-10 w-10 items-center justify-center rounded-full text-white"
-                style={{ backgroundColor: "var(--branch-color)" }}
+    <nav
+      aria-label="Quick links"
+      className="relative z-20 -mt-10 sm:-mt-14 lg:-mt-18 px-4 sm:px-6 lg:px-8"
+    >
+      <div className="container-wide mx-auto">
+        <ul className="grid grid-cols-2 divide-y divide-ink-100/80 overflow-hidden rounded-xl bg-white/95 shadow-2xl ring-1 ring-black/10 backdrop-blur-md sm:grid-cols-3 sm:divide-y-0 lg:grid-cols-6 lg:divide-x lg:divide-ink-100/80 sm:rounded-2xl">
+          {tiles.map((tile) => (
+            <li key={`${tile.label}-${tile.href}`} className="flex">
+              <Link
+                href={tile.href}
+                className="group relative flex w-full flex-col items-center justify-center gap-3 bg-white px-3 py-5 sm:py-6 text-center transition-all duration-300 hover:bg-brand-50/50 hover:-translate-y-0.5"
               >
-                <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden>
-                  {icons[tile.icon]}
-                </svg>
-              </span>
-              <span className="text-[0.78rem] font-semibold uppercase tracking-wider text-ink-700">
-                {tile.label}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <span
+                  className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, var(--branch-color), var(--branch-color-dark))",
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="h-5 w-5 sm:h-5.5 sm:w-5.5 transition-transform duration-300"
+                    aria-hidden
+                  >
+                    {icons[tile.icon]}
+                  </svg>
+                </span>
+                <span className="text-[0.76rem] sm:text-[0.82rem] font-bold uppercase tracking-wider text-ink-800 transition-colors duration-200 group-hover:text-brand-700">
+                  {tile.label}
+                </span>
+                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-gold-500 transition-all duration-300 group-hover:w-12 sm:group-hover:w-16" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 }
