@@ -70,7 +70,6 @@ export default async function PublicLayout({
       <Masthead
         homeHref="/"
         title={site.name}
-        subtitle={site.englishName}
         affiliation={`${site.affiliation} · Managed by ${site.trust}`}
         applyHref="/#campuses"
       />
