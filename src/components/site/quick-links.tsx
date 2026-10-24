@@ -27,15 +27,15 @@ export function QuickLinks({ tiles }: { tiles: Tile[] }) {
   return (
     <nav
       aria-label="Quick links"
-      className="border-b border-ink-200 bg-white"
+      className="border-b border-ink-200 bg-ink-50"
     >
-      <div className="container-wide">
-        <ul className="grid grid-cols-2 divide-x divide-y divide-ink-100 sm:grid-cols-3 sm:divide-y-0 lg:grid-cols-6 lg:divide-y-0">
+      <div className="w-full">
+        <ul className="grid grid-cols-2 divide-x divide-y divide-ink-200 sm:grid-cols-3 sm:divide-y-0 lg:grid-cols-6 lg:divide-y-0">
           {tiles.map((tile) => (
             <li key={`${tile.label}-${tile.href}`} className="flex">
               <Link
                 href={tile.href}
-                className="group relative flex w-full flex-col items-center justify-center gap-2.5 bg-white px-3 py-5 sm:py-6 text-center transition-all duration-200 hover:bg-brand-50/50"
+                className="group relative flex w-full flex-col items-center justify-center gap-2 bg-white px-3 py-3.5 sm:py-4 text-center transition-all duration-200 hover:bg-brand-50/60"
               >
                 <span
                   className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl text-white shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md"

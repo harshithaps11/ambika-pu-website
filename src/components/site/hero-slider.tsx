@@ -58,7 +58,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
         if (event.key === "ArrowLeft") go(index - 1);
       }}
     >
-      <div className="relative h-[380px] sm:h-[480px] lg:h-[560px] xl:h-[620px]">
+      <div className="relative h-[480px] sm:h-[580px] lg:h-[680px] xl:h-[740px]">
         {slides.map((slide, slideIndex) => (
           <div
             key={slide.id}
