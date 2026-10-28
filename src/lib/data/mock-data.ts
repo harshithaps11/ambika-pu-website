@@ -7,7 +7,8 @@ export function isDatabaseConfigured(): boolean {
     url.includes("HOST") ||
     url.includes("USER:PASSWORD") ||
     url.includes("DBNAME") ||
-    url.includes("replace-with")
+    url.includes("replace-with") ||
+    url.includes("fallback")
   ) {
     return false;
   }

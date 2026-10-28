@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
+  // Limit workers during build to prevent out-of-memory errors
+  experimental: {
+    cpus: 4,
+  },
+
   // The dev server is reached over 127.0.0.1 during local testing.
   allowedDevOrigins: ["127.0.0.1", "localhost"],
 

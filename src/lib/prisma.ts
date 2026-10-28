@@ -5,14 +5,11 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: ReturnType<typeof createPrismaClient>;
 };
 
-function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL;
+const FALLBACK_DATABASE_URL =
+  "postgresql://postgres:postgres@localhost:5432/fallback?sslmode=disable";
 
-  if (!connectionString) {
-    throw new Error(
-      "DATABASE_URL is not set. Copy .env.example to .env and fill it in.",
-    );
-  }
+function createPrismaClient() {
+  const connectionString = process.env.DATABASE_URL || FALLBACK_DATABASE_URL;
 
   // Prisma 7 talks to Postgres through a driver adapter rather than a
   // bundled query engine, so the pool lives here.
