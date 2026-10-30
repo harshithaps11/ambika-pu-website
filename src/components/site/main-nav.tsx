@@ -119,15 +119,6 @@ export function MainNav({
           <BurgerIcon open={mobileOpen} />
           Menu
         </button>
-
-        {ctaHref ? (
-          <Link
-            href={ctaHref}
-            className="my-2 ml-auto hidden items-center rounded-sm bg-gold-500 px-5 text-[0.82rem] font-bold uppercase tracking-wider text-ink-900 transition-colors hover:bg-gold-400 lg:flex"
-          >
-            {ctaLabel}
-          </Link>
-        ) : null}
       </div>
 
       {/* Mobile drawer */}

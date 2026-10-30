@@ -73,7 +73,7 @@ export default async function PublicLayout({
         affiliation={`${site.affiliation} · Managed by ${site.trust}`}
         applyHref="/#campuses"
       />
-      <MainNav items={navItems} ctaHref="/#campuses" ctaLabel="Apply Online" />
+      <MainNav items={navItems} />
       <NewsTicker items={ticker} />
 
       <main id="main">{children}</main>

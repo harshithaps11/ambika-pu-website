@@ -4,7 +4,6 @@ import { FacilitiesGrid } from "@/components/site/facilities-grid";
 import { HeroSlider } from "@/components/site/hero-slider";
 import { NoticeBoard } from "@/components/site/notice-board";
 import { PrincipalMessage } from "@/components/site/principal-message";
-import { QuickLinks } from "@/components/site/quick-links";
 import { StatsStrip } from "@/components/site/stats-strip";
 import { ToppersStrip } from "@/components/site/toppers-strip";
 import { ButtonLink } from "@/components/ui/button";
@@ -53,17 +52,6 @@ export default async function BranchHomePage({
           ctaLabel: slide.ctaLabel,
           ctaUrl: slide.ctaUrl,
         }))}
-      />
-
-      <QuickLinks
-        tiles={[
-          { label: "Apply Online", href: `${base}/admissions`, icon: "admission" },
-          { label: "Courses", href: `${base}/courses`, icon: "course" },
-          { label: "Results", href: `${base}/results`, icon: "result" },
-          { label: "Gallery", href: `${base}/gallery`, icon: "gallery" },
-          { label: "Notices", href: `${base}/news`, icon: "download" },
-          { label: "Contact", href: `${base}/contact`, icon: "contact" },
-        ]}
       />
 
       <section className="py-14">

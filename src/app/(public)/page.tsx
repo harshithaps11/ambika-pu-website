@@ -3,7 +3,6 @@ import { BranchCard } from "@/components/site/branch-card";
 import { HeroSlider } from "@/components/site/hero-slider";
 import { NoticeBoard } from "@/components/site/notice-board";
 import { PrincipalMessage } from "@/components/site/principal-message";
-import { QuickLinks } from "@/components/site/quick-links";
 import { StatsStrip } from "@/components/site/stats-strip";
 import { ToppersStrip } from "@/components/site/toppers-strip";
 import { ButtonLink } from "@/components/ui/button";
@@ -53,17 +52,6 @@ export default async function HomePage() {
           ctaLabel: slide.ctaLabel,
           ctaUrl: slide.ctaUrl,
         }))}
-      />
-
-      <QuickLinks
-        tiles={[
-          { label: "Admissions", href: "/#admissions", icon: "admission" },
-          { label: "Courses", href: "/#campuses", icon: "course" },
-          { label: "Results", href: "/news?category=RESULT", icon: "result" },
-          { label: "Gallery", href: "/gallery", icon: "gallery" },
-          { label: "Notices", href: "/news?category=NOTICE", icon: "download" },
-          { label: "Contact", href: "/contact", icon: "contact" },
-        ]}
       />
 
       {/* Welcome + notice board */}
@@ -186,11 +174,10 @@ export default async function HomePage() {
                     <span
                       className="block h-36 bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03]"
                       style={{
-                        backgroundImage: `url('${
-                          album.coverImageUrl ??
+                        backgroundImage: `url('${album.coverImageUrl ??
                           album.images[0]?.url ??
                           FALLBACK_CAMPUS_IMAGES[index % FALLBACK_CAMPUS_IMAGES.length]
-                        }')`,
+                          }')`,
                       }}
                     />
                     <span className="block px-4 py-3">

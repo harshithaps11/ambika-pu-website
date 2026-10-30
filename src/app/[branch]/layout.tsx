@@ -105,11 +105,7 @@ export default async function BranchLayout({
         admissionOpen={branch.admissionOpen}
       />
 
-      <MainNav
-        items={navItems}
-        ctaHref={`${base}/admissions`}
-        ctaLabel={branch.admissionOpen ? "Apply Online" : "Enquire"}
-      />
+      <MainNav items={navItems} />
 
       <NewsTicker items={ticker} basePath={base} />
 
