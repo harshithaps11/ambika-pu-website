@@ -18,31 +18,33 @@ export function ToppersStrip({ toppers }: { toppers: Topper[] }) {
       {toppers.map((topper) => (
         <li
           key={topper.id}
-          className="flex flex-col items-center border border-ink-200 bg-white px-4 py-6 text-center shadow-card"
+          className="group relative flex flex-col items-center rounded-xs border border-ink-200/90 bg-white px-4 py-6 text-center shadow-card transition-all duration-300 ease-out hover:-translate-y-2 hover:border-gold-400 hover:shadow-raise"
         >
-          <Avatar
-            name={topper.studentName}
-            src={topper.photoUrl}
-            className="h-20 w-20 border-2 border-gold-400 text-xl"
-          />
+          <div className="relative">
+            <Avatar
+              name={topper.studentName}
+              src={topper.photoUrl}
+              className="h-20 w-20 border-2 border-gold-400 text-xl transition-all duration-300 group-hover:scale-105 group-hover:border-gold-500 group-hover:ring-4 group-hover:ring-gold-300/40"
+            />
+          </div>
 
-          <p className="mt-3 font-serif text-[0.95rem] font-semibold leading-snug text-ink-900">
+          <p className="mt-3.5 font-serif text-[0.98rem] font-semibold leading-snug text-ink-900 transition-colors group-hover:text-brand-700">
             {topper.studentName}
           </p>
 
-          <p className="mt-0.5 text-[0.72rem] uppercase tracking-wider text-ink-500">
+          <p className="mt-0.5 text-[0.72rem] font-medium uppercase tracking-wider text-ink-500">
             {topper.stream} · {topper.academicYear}
           </p>
 
-          <p className="mt-2.5 font-serif text-2xl font-semibold text-brand-700">
+          <p className="mt-2.5 font-serif text-2xl font-semibold text-brand-700 transition-transform duration-200 group-hover:scale-108">
             {topper.percentage.toFixed(2)}
             <span className="text-base">%</span>
           </p>
 
           {topper.rankLabel ? (
-            <p className="mt-1 text-[0.72rem] font-semibold uppercase tracking-wider text-gold-600">
+            <span className="mt-1.5 inline-block rounded-full border border-gold-300/80 bg-gold-50 px-2.5 py-0.5 text-[0.7rem] font-bold uppercase tracking-wider text-gold-700">
               {topper.rankLabel}
-            </p>
+            </span>
           ) : null}
         </li>
       ))}

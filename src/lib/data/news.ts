@@ -14,6 +14,7 @@ const LIST_FIELDS = {
   isPinned: true,
   linkUrl: true,
   attachmentUrl: true,
+  coverImageUrl: true,
   branch: { select: { slug: true, shortName: true } },
 } as const;
 

@@ -21,20 +21,21 @@ export function BranchCard({
 
   return (
     <article
-      className="group relative flex flex-col overflow-hidden border border-ink-200 bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-raise"
+      className="group relative flex flex-col overflow-hidden rounded-xs border border-ink-200/90 bg-white shadow-card transition-all duration-300 ease-out hover:-translate-y-2 hover:border-brand-300 hover:shadow-raise"
       style={{ ["--branch-color" as string]: branch.themeColor }}
     >
       <span
         aria-hidden
-        className="block h-1.5 w-full"
+        className="block h-1.5 w-full transition-transform duration-300 group-hover:scale-y-125"
         style={{ backgroundColor: branch.themeColor }}
       />
 
-      <div
-        className="relative h-44 bg-cover bg-center sm:h-52"
-        style={{ backgroundImage: `url('${imageUrl}')` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent" />
+      <div className="relative h-44 overflow-hidden sm:h-52">
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-108"
+          style={{ backgroundImage: `url('${imageUrl}')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-ink-900/35 to-transparent" />
 
         {branch.admissionOpen ? (
           <span className="absolute right-3 top-3">
@@ -48,7 +49,7 @@ export function BranchCard({
               {location}
             </p>
           ) : null}
-          <h3 className="mt-1 font-serif text-xl font-semibold leading-tight text-white sm:text-[1.4rem]">
+          <h3 className="mt-1 font-serif text-xl font-semibold leading-tight text-white transition-colors duration-200 group-hover:text-gold-200 sm:text-[1.4rem]">
             {branch.shortName}
           </h3>
         </div>
@@ -86,11 +87,11 @@ export function BranchCard({
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Link
             href={href}
-            className="inline-flex h-10 items-center gap-2 rounded-sm px-5 text-[0.8rem] font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+            className="inline-flex h-10 items-center gap-2 rounded-sm px-5 text-[0.8rem] font-bold uppercase tracking-wider text-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:opacity-95"
             style={{ backgroundColor: branch.themeColor }}
           >
             Visit Campus Site
-            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden>
+            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden>
               <path d="M7.3 4.3a1 1 0 011.4 0l5 5a1 1 0 010 1.4l-5 5a1 1 0 01-1.4-1.4L11.6 10 7.3 5.7a1 1 0 010-1.4z" />
             </svg>
           </Link>

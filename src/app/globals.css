@@ -7,8 +7,8 @@
    printed college prospectus rather than a software product.
 --------------------------------------------------------------------------- */
 @theme {
-  --font-sans: var(--font-body), "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-serif: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-sans: "Open Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
 
   --color-brand-50: #fdf4f5;
   --color-brand-100: #f9e5e7;
@@ -44,8 +44,41 @@
   --color-leaf-600: #14532d;
   --color-leaf-700: #0f3f22;
 
-  --shadow-card: 0 1px 2px rgb(27 26 24 / 0.06), 0 4px 16px rgb(27 26 24 / 0.06);
-  --shadow-raise: 0 2px 6px rgb(27 26 24 / 0.08), 0 12px 32px rgb(27 26 24 / 0.1);
+  --shadow-card: 0 1px 3px rgba(27, 26, 24, 0.06), 0 6px 16px -2px rgba(27, 26, 24, 0.05);
+  --shadow-raise: 0 16px 36px -8px rgba(27, 26, 24, 0.14), 0 4px 14px -2px rgba(122, 31, 43, 0.08);
+}
+
+/* ---------------------------------------------------------------------------
+   Textures & Background Patterns
+   Academic textures and subtle patterns for rich depth.
+--------------------------------------------------------------------------- */
+.bg-texture-subtle {
+  background-color: #faf9f6;
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(122, 31, 43, 0.025) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(201, 162, 39, 0.035) 0%, transparent 45%),
+    radial-gradient(#d6d1c7 1.1px, transparent 1.1px);
+  background-size: 100% 100%, 100% 100%, 22px 22px;
+}
+
+.bg-texture-dots {
+  background-image: radial-gradient(rgba(46, 43, 41, 0.075) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+.bg-texture-dark {
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(201, 162, 39, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(rgba(242, 224, 164, 0.09) 1.2px, transparent 1.2px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+}
+
+.bg-texture-grid {
+  background-image: 
+    linear-gradient(to right, rgba(27, 26, 24, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(27, 26, 24, 0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 /* ---------------------------------------------------------------------------

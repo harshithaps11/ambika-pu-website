@@ -1,20 +1,6 @@
 import type { Metadata } from "next";
-import { Open_Sans, Source_Serif_4 } from "next/font/google";
 import { site, siteUrl } from "@/config/site";
 import "./globals.css";
-
-const display = Source_Serif_4({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-  weight: ["600", "700"],
-});
-
-const body = Open_Sans({
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -41,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${display.variable} ${body.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <body className="flex min-h-full flex-col bg-white">{children}</body>
     </html>

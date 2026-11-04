@@ -76,8 +76,11 @@ export function MainNav({
                   aria-current={active ? "page" : undefined}
                   aria-expanded={hasChildren ? openMenu === itemKey : undefined}
                   className={cn(
-                    "flex h-12 lg:h-13 items-center gap-2 px-4 lg:px-5 xl:px-6 text-[0.8rem] lg:text-[0.85rem] font-semibold uppercase tracking-[0.06em] text-white/95 transition-colors hover:bg-black/20 hover:text-white",
-                    active && "bg-black/25 text-white",
+                    "relative flex h-12 lg:h-13 items-center gap-2 px-4 lg:px-5 xl:px-6 text-[0.8rem] lg:text-[0.85rem] font-semibold uppercase tracking-[0.06em] text-white/95 transition-all duration-200 hover:text-gold-200",
+                    "after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:-translate-x-1/2 after:bg-gold-400 after:transition-all after:duration-300",
+                    active
+                      ? "bg-black/20 text-white after:w-full"
+                      : "after:w-0 hover:after:w-full hover:bg-black/15",
                   )}
                 >
                   {item.label}

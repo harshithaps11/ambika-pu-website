@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BranchCard } from "@/components/site/branch-card";
 import { HeroSlider } from "@/components/site/hero-slider";
-import { NoticeBoard } from "@/components/site/notice-board";
+import { NewsSlider } from "@/components/site/news-slider";
 import { PrincipalMessage } from "@/components/site/principal-message";
 import { StatsStrip } from "@/components/site/stats-strip";
 import { ToppersStrip } from "@/components/site/toppers-strip";
@@ -54,9 +54,10 @@ export default async function HomePage() {
         }))}
       />
 
-      {/* Welcome + notice board */}
-      <section className="py-14">
-        <div className="container-site grid gap-10 lg:grid-cols-[1.55fr_1fr]">
+      {/* Welcome + news slider */}
+      <section className="relative overflow-hidden py-16 bg-white">
+        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-brand-50/50 blur-3xl" />
+        <div className="container-site relative grid gap-10 lg:grid-cols-[1.55fr_1fr]">
           <div>
             <SectionHeading
               eyebrow={`Established ${site.establishedYear}`}
@@ -84,12 +85,16 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <NoticeBoard items={notices} viewAllHref="/news" />
+          <NewsSlider
+            items={notices}
+            title="News & Events"
+            viewAllHref="/news"
+          />
         </div>
       </section>
 
       {/* The two branch gateways */}
-      <section id="campuses" className="scroll-mt-16 bg-ink-50 py-14">
+      <section id="campuses" className="relative scroll-mt-16 bg-texture-subtle py-16 border-y border-ink-200/80">
         <div className="container-site">
           <SectionHeading
             align="center"
@@ -124,7 +129,7 @@ export default async function HomePage() {
 
       {/* Achievers */}
       {toppers.length ? (
-        <section className="py-14">
+        <section className="relative py-16 bg-texture-dots/60 border-b border-ink-200/70">
           <div className="container-site">
             <SectionHeading
               align="center"
@@ -152,15 +157,16 @@ export default async function HomePage() {
 
       {/* Gallery preview */}
       {albums.length ? (
-        <section className="border-t border-ink-200 bg-ink-50 py-14">
+        <section className="relative border-b border-ink-200/80 bg-texture-subtle py-16">
           <div className="container-site">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionHeading eyebrow="Campus life" title="Photo Gallery" />
               <Link
                 href="/gallery"
-                className="text-[0.8rem] font-semibold uppercase tracking-wider text-brand-700 underline underline-offset-4"
+                className="group inline-flex items-center gap-1.5 text-[0.8rem] font-semibold uppercase tracking-wider text-brand-700 underline underline-offset-4 transition-colors hover:text-brand-900"
               >
                 View all albums
+                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
             </div>
 
@@ -169,19 +175,22 @@ export default async function HomePage() {
                 <li key={album.id}>
                   <Link
                     href={`/gallery/${album.slug}`}
-                    className="group block overflow-hidden border border-ink-200 bg-white shadow-card transition-shadow hover:shadow-raise"
+                    className="group block overflow-hidden rounded-xs border border-ink-200/90 bg-white shadow-card transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-300 hover:shadow-raise"
                   >
-                    <span
-                      className="block h-36 bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03]"
-                      style={{
-                        backgroundImage: `url('${album.coverImageUrl ??
-                          album.images[0]?.url ??
-                          FALLBACK_CAMPUS_IMAGES[index % FALLBACK_CAMPUS_IMAGES.length]
-                          }')`,
-                      }}
-                    />
-                    <span className="block px-4 py-3">
-                      <span className="block text-[0.88rem] font-semibold text-ink-800 group-hover:text-brand-700">
+                    <div className="relative h-40 overflow-hidden bg-ink-100">
+                      <span
+                        className="block h-full w-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-108"
+                        style={{
+                          backgroundImage: `url('${album.coverImageUrl ??
+                            album.images[0]?.url ??
+                            FALLBACK_CAMPUS_IMAGES[index % FALLBACK_CAMPUS_IMAGES.length]
+                            }')`,
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    </div>
+                    <span className="block px-4 py-3.5">
+                      <span className="block text-[0.88rem] font-semibold text-ink-800 transition-colors duration-200 group-hover:text-brand-700">
                         {album.title}
                       </span>
                       <span className="mt-0.5 block text-[0.72rem] text-ink-500">
@@ -199,15 +208,17 @@ export default async function HomePage() {
       {/* Admission call to action */}
       <section
         id="admissions"
-        className="scroll-mt-16 py-12"
+        className="relative scroll-mt-16 overflow-hidden py-14 bg-texture-dark border-t-2 border-gold-500/30"
         style={{ backgroundColor: "var(--branch-color)" }}
       >
-        <div className="container-site flex flex-col items-center gap-6 text-center lg:flex-row lg:justify-between lg:text-left">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-black/25 blur-3xl" />
+        <div className="container-site relative flex flex-col items-center gap-6 text-center lg:flex-row lg:justify-between lg:text-left">
           <div>
-            <h2 className="font-serif text-[1.5rem] font-semibold text-white">
+            <h2 className="font-serif text-[1.55rem] font-semibold text-white">
               Admissions are open for the new academic year
             </h2>
-            <p className="mt-1.5 text-[0.92rem] text-white/80">
+            <p className="mt-1.5 text-[0.92rem] text-white/85">
               Apply online to the campus of your choice. Our office will contact you
               after your application is received.
             </p>

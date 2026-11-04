@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { CourseGrid } from "@/components/site/course-grid";
 import { FacilitiesGrid } from "@/components/site/facilities-grid";
 import { HeroSlider } from "@/components/site/hero-slider";
-import { NoticeBoard } from "@/components/site/notice-board";
+import { NewsSlider } from "@/components/site/news-slider";
 import { PrincipalMessage } from "@/components/site/principal-message";
 import { StatsStrip } from "@/components/site/stats-strip";
 import { ToppersStrip } from "@/components/site/toppers-strip";
@@ -54,8 +54,9 @@ export default async function BranchHomePage({
         }))}
       />
 
-      <section className="py-14">
-        <div className="container-site grid gap-10 lg:grid-cols-[1.55fr_1fr]">
+      <section className="relative overflow-hidden py-16 bg-white">
+        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-brand-50/50 blur-3xl" />
+        <div className="container-site relative grid gap-10 lg:grid-cols-[1.55fr_1fr]">
           <div>
             <SectionHeading
               eyebrow={
@@ -79,7 +80,7 @@ export default async function BranchHomePage({
 
             {branch.admissionNote ? (
               <div
-                className="mt-6 border-l-2 bg-ink-50 px-4 py-3 text-[0.88rem] text-ink-700"
+                className="mt-6 border-l-3 bg-ink-50 px-4 py-3 text-[0.88rem] text-ink-700 shadow-2xs"
                 style={{ borderColor: "var(--branch-color)" }}
               >
                 {branch.admissionNote}
@@ -96,16 +97,16 @@ export default async function BranchHomePage({
             </div>
           </div>
 
-          <NoticeBoard
+          <NewsSlider
             items={notices}
             basePath={base}
+            title={`${branch.shortName} News`}
             viewAllHref={`${base}/news`}
-            title="Campus Notices"
           />
         </div>
       </section>
 
-      <section className="border-t border-ink-200 bg-ink-50 py-14">
+      <section className="relative border-t border-ink-200/80 bg-texture-subtle py-16">
         <div className="container-site">
           <SectionHeading
             eyebrow="Pre-University Course"
@@ -129,7 +130,7 @@ export default async function BranchHomePage({
       ) : null}
 
       {toppers.length ? (
-        <section className="py-14">
+        <section className="relative py-16 bg-texture-dots/60 border-t border-ink-200/70">
           <div className="container-site">
             <SectionHeading
               align="center"
@@ -144,7 +145,7 @@ export default async function BranchHomePage({
       ) : null}
 
       {facilities.length ? (
-        <section className="border-t border-ink-200 bg-ink-50 py-14">
+        <section className="relative border-t border-ink-200/80 bg-texture-subtle py-16">
           <div className="container-site">
             <SectionHeading eyebrow="On campus" title="Facilities" />
             <div className="mt-9">
@@ -154,15 +155,20 @@ export default async function BranchHomePage({
         </section>
       ) : null}
 
-      <section className="py-12" style={{ backgroundColor: "var(--branch-color)" }}>
-        <div className="container-site flex flex-col items-center gap-5 text-center lg:flex-row lg:justify-between lg:text-left">
+      <section
+        className="relative overflow-hidden py-14 bg-texture-dark border-t-2 border-gold-500/30"
+        style={{ backgroundColor: "var(--branch-color)" }}
+      >
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-black/25 blur-3xl" />
+        <div className="container-site relative flex flex-col items-center gap-5 text-center lg:flex-row lg:justify-between lg:text-left">
           <div>
-            <h2 className="font-serif text-[1.5rem] font-semibold text-white">
+            <h2 className="font-serif text-[1.55rem] font-semibold text-white">
               {branch.admissionOpen
                 ? "Admissions are open at this campus"
                 : "Admission enquiries welcome"}
             </h2>
-            <p className="mt-1.5 text-[0.92rem] text-white/80">
+            <p className="mt-1.5 text-[0.92rem] text-white/85">
               Fill the online form and our office will call you to arrange document
               verification.
             </p>
