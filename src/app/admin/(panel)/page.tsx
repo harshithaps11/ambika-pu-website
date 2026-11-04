@@ -8,6 +8,7 @@ import {
   StatusPill,
 } from "@/components/admin/ui";
 import { Capability, Role } from "@/generated/prisma/enums";
+import { isDatabaseConfigured } from "@/lib/data/mock-data";
 import {
   branchScopeFilter,
   branchScopeFilterWithGlobal,
@@ -33,65 +34,142 @@ async function loadDashboard(user: Awaited<ReturnType<typeof requireUser>>) {
   const canSeeNews = can(user, Capability.NEWS_VIEW) || can(user, Capability.NEWS_MANAGE);
   const canSeeEnquiries = can(user, Capability.CONTACT_VIEW);
 
+  if (!isDatabaseConfigured()) {
+    return {
+      canSeeApplications,
+      canSeeNews,
+      canSeeEnquiries,
+      totalApplications: 48,
+      pendingApplications: 5,
+      recentApplications: 19,
+      admittedCount: 22,
+      publishedNews: 6,
+      recentApplicationRows: [
+        {
+          id: "mock_app_1",
+          applicationNo: "AMB-NLK-2026-00001",
+          studentName: "Aishwarya Hegde",
+          preferredCombination: "PCMB",
+          status: "SUBMITTED" as const,
+          createdAt: new Date(Date.now() - 3600000 * 4),
+          branch: { shortName: "Nellikatte Campus" },
+        },
+        {
+          id: "mock_app_2",
+          applicationNo: "AMB-NLK-2026-00002",
+          studentName: "Karthik Shetty",
+          preferredCombination: "PCMC",
+          status: "ADMITTED" as const,
+          createdAt: new Date(Date.now() - 86400000),
+          branch: { shortName: "Nellikatte Campus" },
+        },
+        {
+          id: "mock_app_3",
+          applicationNo: "AMB-BPL-2026-00003",
+          studentName: "Fathima Nasreen",
+          preferredCombination: "SEBA",
+          status: "SHORTLISTED" as const,
+          createdAt: new Date(Date.now() - 86400000 * 2),
+          branch: { shortName: "Bappalige Campus" },
+        },
+        {
+          id: "mock_app_4",
+          applicationNo: "AMB-BPL-2026-00004",
+          studentName: "Vignesh Rai",
+          preferredCombination: "PCMB",
+          status: "UNDER_REVIEW" as const,
+          createdAt: new Date(Date.now() - 86400000 * 3),
+          branch: { shortName: "Bappalige Campus" },
+        },
+        {
+          id: "mock_app_5",
+          applicationNo: "AMB-NLK-2026-00005",
+          studentName: "Sahana Bhat",
+          preferredCombination: "CEBA",
+          status: "ADMITTED" as const,
+          createdAt: new Date(Date.now() - 86400000 * 4),
+          branch: { shortName: "Nellikatte Campus" },
+        },
+      ],
+      unreadEnquiries: 2,
+    };
+  }
+
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-  const [
-    totalApplications,
-    pendingApplications,
-    recentApplications,
-    admittedCount,
-    publishedNews,
-    recentApplicationRows,
-  ] = await Promise.all([
-    canSeeApplications ? prisma.application.count({ where: scope }) : 0,
-    canSeeApplications
-      ? prisma.application.count({ where: { ...scope, status: "SUBMITTED" } })
-      : 0,
-    canSeeApplications
-      ? prisma.application.count({
-          where: { ...scope, createdAt: { gte: thirtyDaysAgo } },
-        })
-      : 0,
-    canSeeApplications
-      ? prisma.application.count({ where: { ...scope, status: "ADMITTED" } })
-      : 0,
-    canSeeNews
-      ? prisma.newsItem.count({ where: { ...globalScope, isPublished: true } })
-      : 0,
-    canSeeApplications
-      ? prisma.application.findMany({
-          where: scope,
-          orderBy: { createdAt: "desc" },
-          take: 8,
-          select: {
-            id: true,
-            applicationNo: true,
-            studentName: true,
-            preferredCombination: true,
-            status: true,
-            createdAt: true,
-            branch: { select: { shortName: true } },
-          },
-        })
-      : [],
-  ]);
+  try {
+    const [
+      totalApplications,
+      pendingApplications,
+      recentApplications,
+      admittedCount,
+      publishedNews,
+      recentApplicationRows,
+    ] = await Promise.all([
+      canSeeApplications ? prisma.application.count({ where: scope }) : 0,
+      canSeeApplications
+        ? prisma.application.count({ where: { ...scope, status: "SUBMITTED" } })
+        : 0,
+      canSeeApplications
+        ? prisma.application.count({
+            where: { ...scope, createdAt: { gte: thirtyDaysAgo } },
+          })
+        : 0,
+      canSeeApplications
+        ? prisma.application.count({ where: { ...scope, status: "ADMITTED" } })
+        : 0,
+      canSeeNews
+        ? prisma.newsItem.count({ where: { ...globalScope, isPublished: true } })
+        : 0,
+      canSeeApplications
+        ? prisma.application.findMany({
+            where: scope,
+            orderBy: { createdAt: "desc" },
+            take: 8,
+            select: {
+              id: true,
+              applicationNo: true,
+              studentName: true,
+              preferredCombination: true,
+              status: true,
+              createdAt: true,
+              branch: { select: { shortName: true } },
+            },
+          })
+        : [],
+    ]);
 
-  const unreadEnquiries = canSeeEnquiries
-    ? await prisma.contactMessage.count({ where: { ...globalScope, isRead: false } })
-    : 0;
+    const unreadEnquiries = canSeeEnquiries
+      ? await prisma.contactMessage.count({ where: { ...globalScope, isRead: false } })
+      : 0;
 
-  return {
-    canSeeApplications,
-    canSeeNews,
-    canSeeEnquiries,
-    totalApplications,
-    pendingApplications,
-    recentApplications,
-    admittedCount,
-    publishedNews,
-    recentApplicationRows,
-    unreadEnquiries,
-  };
+    return {
+      canSeeApplications,
+      canSeeNews,
+      canSeeEnquiries,
+      totalApplications,
+      pendingApplications,
+      recentApplications,
+      admittedCount,
+      publishedNews,
+      recentApplicationRows,
+      unreadEnquiries,
+    };
+  } catch (error) {
+    console.error("Dashboard database connection error:", error);
+    return {
+      canSeeApplications,
+      canSeeNews,
+      canSeeEnquiries,
+      totalApplications: 0,
+      pendingApplications: 0,
+      recentApplications: 0,
+      admittedCount: 0,
+      publishedNews: 0,
+      recentApplicationRows: [],
+      unreadEnquiries: 0,
+    };
+  }
 }
 
 export default async function AdminDashboard() {

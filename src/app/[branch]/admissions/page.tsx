@@ -69,7 +69,7 @@ export default async function AdmissionsPage({ params }: Props) {
           </div>
 
           <aside className="space-y-6 lg:sticky lg:top-20 lg:h-fit">
-            <div className="border border-ink-200 bg-ink-50 p-5">
+            <div className="rounded-2xl border border-ink-200/90 bg-white p-6 shadow-card">
               <h2 className="font-serif text-base font-semibold text-ink-900">
                 Documents to keep ready
               </h2>
@@ -91,7 +91,7 @@ export default async function AdmissionsPage({ params }: Props) {
             </div>
 
             <div
-              className="p-5 text-white"
+              className="rounded-2xl p-6 text-white shadow-card"
               style={{ backgroundColor: "var(--branch-color)" }}
             >
               <h2 className="font-serif text-base font-semibold text-white">
@@ -104,7 +104,7 @@ export default async function AdmissionsPage({ params }: Props) {
               {branch.phone ? (
                 <a
                   href={telHref(branch.phone)}
-                  className="mt-3 inline-block font-serif text-lg font-semibold text-gold-300 underline underline-offset-4"
+                  className="mt-3 inline-block font-sans text-lg font-bold tabular-nums tracking-normal text-gold-300 underline underline-offset-4"
                 >
                   {formatPhone(branch.phone) || branch.phone}
                 </a>

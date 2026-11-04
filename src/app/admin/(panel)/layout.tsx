@@ -4,6 +4,7 @@ import { AdminSidebar, type AdminNavSection } from "@/components/admin/shell";
 import { logout } from "@/lib/actions/auth";
 import { prisma } from "@/lib/prisma";
 import { Capability, Role } from "@/generated/prisma/enums";
+import { isDatabaseConfigured } from "@/lib/data/mock-data";
 import {
   branchScopeFilter,
   branchScopeFilterWithGlobal,
@@ -22,20 +23,26 @@ export default async function AdminPanelLayout({
   children: React.ReactNode;
 }) {
   const user = await requireUser();
-
+  const isMock = !isDatabaseConfigured();
   const scope = branchScopeFilter(user);
 
   // Counts shown as badges; each is a single indexed count query.
-  const [pendingApplications, unreadMessages] = await Promise.all([
-    can(user, Capability.APPLICATION_VIEW)
-      ? prisma.application.count({ where: { ...scope, status: "SUBMITTED" } })
-      : Promise.resolve(0),
-    can(user, Capability.CONTACT_VIEW)
-      ? prisma.contactMessage.count({
-          where: { ...branchScopeFilterWithGlobal(user), isRead: false },
-        })
-      : Promise.resolve(0),
-  ]);
+  const [pendingApplications, unreadMessages] = isMock
+    ? [5, 2]
+    : await Promise.all([
+        can(user, Capability.APPLICATION_VIEW)
+          ? prisma.application
+              .count({ where: { ...scope, status: "SUBMITTED" } })
+              .catch(() => 0)
+          : Promise.resolve(0),
+        can(user, Capability.CONTACT_VIEW)
+          ? prisma.contactMessage
+              .count({
+                where: { ...branchScopeFilterWithGlobal(user), isRead: false },
+              })
+              .catch(() => 0)
+          : Promise.resolve(0),
+      ]);
 
   const sections: AdminNavSection[] = [];
 
@@ -141,7 +148,9 @@ export default async function AdminPanelLayout({
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 px-4 py-6 lg:px-7 lg:py-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-6 lg:px-7 lg:py-8">
+          {children}
+        </main>
       </div>
     </div>
   );

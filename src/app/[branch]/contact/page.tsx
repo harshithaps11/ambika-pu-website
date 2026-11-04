@@ -55,7 +55,7 @@ export default async function BranchContactPage({ params }: Props) {
                   <p className="mt-1">
                     <a
                       href={telHref(branch.phone)}
-                      className="font-semibold text-brand-700 underline underline-offset-4"
+                      className="font-sans font-semibold tabular-nums tracking-normal text-brand-700 underline underline-offset-4"
                     >
                       {formatPhone(branch.phone) || branch.phone}
                     </a>
@@ -64,7 +64,7 @@ export default async function BranchContactPage({ params }: Props) {
                         {" · "}
                         <a
                           href={telHref(branch.altPhone)}
-                          className="font-semibold text-brand-700 underline underline-offset-4"
+                          className="font-sans font-semibold tabular-nums tracking-normal text-brand-700 underline underline-offset-4"
                         >
                           {formatPhone(branch.altPhone) || branch.altPhone}
                         </a>

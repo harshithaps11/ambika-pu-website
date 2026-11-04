@@ -68,7 +68,7 @@ export function AdmissionForm({
       {state.message ? (
         <div
           role="alert"
-          className="border-l-4 border-red-600 bg-red-50 px-4 py-3 text-[0.88rem] text-red-800"
+          className="rounded-xl border-l-4 border-red-600 bg-red-50 px-4 py-3 text-[0.88rem] text-red-800 shadow-2xs"
         >
           {state.message}
         </div>
@@ -405,7 +405,7 @@ function Fieldset({
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="border-t border-ink-200 pt-6">
+    <fieldset className="rounded-2xl border border-ink-200/90 bg-white p-6 sm:p-7 shadow-card">
       <legend className="sr-only">{legend}</legend>
       <h2 className="font-serif text-[1.15rem] font-semibold text-ink-900">
         {legend}

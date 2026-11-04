@@ -26,7 +26,7 @@ export default async function LoginPage({
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <div className="flex flex-col items-center text-center">
-            <Crest className="h-16 text-brand-700" />
+            <Crest className="h-16 w-auto object-contain" priority />
             <h1 className="mt-4 font-serif text-xl font-semibold text-ink-900">
               {site.name}
             </h1>
@@ -35,7 +35,7 @@ export default async function LoginPage({
             </p>
           </div>
 
-          <div className="mt-7 border border-ink-200 bg-white p-6 shadow-card">
+          <div className="mt-7 rounded-xl border border-ink-200 bg-white p-6 shadow-card">
             <LoginForm next={next} />
           </div>
 

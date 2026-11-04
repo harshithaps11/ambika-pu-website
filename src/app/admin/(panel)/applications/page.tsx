@@ -12,6 +12,7 @@ import { Input, Label, Select } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { ApplicationStatus, Capability } from "@/generated/prisma/enums";
 import { STATUS_LABELS } from "@/components/admin/ui";
+import { isDatabaseConfigured, MOCK_BRANCHES } from "@/lib/data/mock-data";
 import { branchScopeFilter, can, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
@@ -41,54 +42,134 @@ export default async function ApplicationsPage({ searchParams }: Props) {
     : undefined;
   const query = params.q?.trim();
 
-  const branches = await prisma.branch.findMany({
-    where: branchScopeFilter(user).branchId
-      ? { id: { in: branchScopeFilter(user).branchId!.in } }
-      : {},
-    orderBy: { orderIndex: "asc" },
-    select: { id: true, shortName: true, slug: true },
-  });
+  let branches: { id: string; shortName: string; slug: string }[] = [];
+  let rows: {
+    id: string;
+    applicationNo: string;
+    studentName: string;
+    phone: string;
+    preferredCombination: string | null;
+    status: ApplicationStatus;
+    createdAt: Date;
+    branch: { shortName: string };
+  }[] = [];
+  let total = 0;
 
-  const branchFilter =
-    params.branch && branches.some((branch) => branch.slug === params.branch)
-      ? branches.find((branch) => branch.slug === params.branch)?.id
-      : undefined;
-
-  const where = {
-    ...branchScopeFilter(user),
-    ...(branchFilter ? { branchId: branchFilter } : {}),
-    ...(status ? { status } : {}),
-    ...(query
-      ? {
-          OR: [
-            { studentName: { contains: query, mode: "insensitive" as const } },
-            { applicationNo: { contains: query, mode: "insensitive" as const } },
-            { phone: { contains: query } },
-            { email: { contains: query, mode: "insensitive" as const } },
-          ],
-        }
-      : {}),
-  };
-
-  const [rows, total] = await Promise.all([
-    prisma.application.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PER_PAGE,
-      take: PER_PAGE,
-      select: {
-        id: true,
-        applicationNo: true,
-        studentName: true,
-        phone: true,
-        preferredCombination: true,
-        status: true,
-        createdAt: true,
-        branch: { select: { shortName: true } },
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({
+      id: b.id,
+      shortName: b.shortName,
+      slug: b.slug,
+    }));
+    rows = [
+      {
+        id: "mock_app_1",
+        applicationNo: "AMB-NLK-2026-00001",
+        studentName: "Aishwarya Hegde",
+        phone: "9845012345",
+        preferredCombination: "PCMB",
+        status: ApplicationStatus.SUBMITTED,
+        createdAt: new Date(Date.now() - 3600000 * 4),
+        branch: { shortName: "Nellikatte Campus" },
       },
-    }),
-    prisma.application.count({ where }),
-  ]);
+      {
+        id: "mock_app_2",
+        applicationNo: "AMB-NLK-2026-00002",
+        studentName: "Karthik Shetty",
+        phone: "9845023456",
+        preferredCombination: "PCMC",
+        status: ApplicationStatus.ADMITTED,
+        createdAt: new Date(Date.now() - 86400000),
+        branch: { shortName: "Nellikatte Campus" },
+      },
+      {
+        id: "mock_app_3",
+        applicationNo: "AMB-BPL-2026-00003",
+        studentName: "Fathima Nasreen",
+        phone: "9845034567",
+        preferredCombination: "SEBA",
+        status: ApplicationStatus.SHORTLISTED,
+        createdAt: new Date(Date.now() - 86400000 * 2),
+        branch: { shortName: "Bappalige Campus" },
+      },
+      {
+        id: "mock_app_4",
+        applicationNo: "AMB-BPL-2026-00004",
+        studentName: "Vignesh Rai",
+        phone: "9845045678",
+        preferredCombination: "PCMB",
+        status: ApplicationStatus.UNDER_REVIEW,
+        createdAt: new Date(Date.now() - 86400000 * 3),
+        branch: { shortName: "Bappalige Campus" },
+      },
+      {
+        id: "mock_app_5",
+        applicationNo: "AMB-NLK-2026-00005",
+        studentName: "Sahana Bhat",
+        phone: "9845056789",
+        preferredCombination: "CEBA",
+        status: ApplicationStatus.ADMITTED,
+        createdAt: new Date(Date.now() - 86400000 * 4),
+        branch: { shortName: "Nellikatte Campus" },
+      },
+    ];
+    total = rows.length;
+  } else {
+    try {
+      branches = await prisma.branch.findMany({
+        where: branchScopeFilter(user).branchId
+          ? { id: { in: branchScopeFilter(user).branchId!.in } }
+          : {},
+        orderBy: { orderIndex: "asc" },
+        select: { id: true, shortName: true, slug: true },
+      });
+
+      const branchFilter =
+        params.branch && branches.some((branch) => branch.slug === params.branch)
+          ? branches.find((branch) => branch.slug === params.branch)?.id
+          : undefined;
+
+      const where = {
+        ...branchScopeFilter(user),
+        ...(branchFilter ? { branchId: branchFilter } : {}),
+        ...(status ? { status } : {}),
+        ...(query
+          ? {
+              OR: [
+                { studentName: { contains: query, mode: "insensitive" as const } },
+                { applicationNo: { contains: query, mode: "insensitive" as const } },
+                { phone: { contains: query } },
+                { email: { contains: query, mode: "insensitive" as const } },
+              ],
+            }
+          : {}),
+      };
+
+      const [dbRows, dbTotal] = await Promise.all([
+        prisma.application.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * PER_PAGE,
+          take: PER_PAGE,
+          select: {
+            id: true,
+            applicationNo: true,
+            studentName: true,
+            phone: true,
+            preferredCombination: true,
+            status: true,
+            createdAt: true,
+            branch: { select: { shortName: true } },
+          },
+        }),
+        prisma.application.count({ where }),
+      ]);
+      rows = dbRows;
+      total = dbTotal;
+    } catch (err) {
+      console.error("Applications query error:", err);
+    }
+  }
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 

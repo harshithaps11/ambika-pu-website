@@ -29,10 +29,10 @@ export function TopUtilityBar({
         <div className="flex items-center gap-5">
           <a
             href={telHref(displayPhone)}
-            className="flex items-center gap-1.5 text-white/80 transition-colors hover:text-gold-300"
+            className="flex items-center gap-1.5 font-sans font-medium tabular-nums tracking-normal text-white/80 transition-colors hover:text-gold-300"
           >
             <PhoneIcon />
-            {formatPhone(displayPhone) || displayPhone}
+            <span>{formatPhone(displayPhone) || displayPhone}</span>
           </a>
           <a
             href={`mailto:${displayEmail}`}

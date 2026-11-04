@@ -133,6 +133,11 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Enter your password"),
 });
 
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(2, "Enter your full name").max(120),
+  email: z.email("Enter a valid email address").max(160),
+});
+
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Enter your current password"),

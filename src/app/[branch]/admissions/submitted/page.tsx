@@ -68,7 +68,7 @@ export default async function AdmissionSubmittedPage({ params, searchParams }: P
               For any question, call{" "}
               <a
                 href={telHref(branch.phone)}
-                className="font-semibold text-brand-700 underline underline-offset-4"
+                className="font-sans font-semibold tabular-nums tracking-normal text-brand-700 underline underline-offset-4"
               >
                 {formatPhone(branch.phone) || branch.phone}
               </a>

@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminPageHeader, Panel } from "@/components/admin/ui";
 import { Badge } from "@/components/ui/badge";
-import { Role } from "@/generated/prisma/enums";
+import { Capability, Role } from "@/generated/prisma/enums";
+import { isDatabaseConfigured, MOCK_BRANCHES } from "@/lib/data/mock-data";
 import { CAPABILITY_GROUPS, requireOwner } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDateTime } from "@/lib/utils";
@@ -18,28 +19,79 @@ export default async function UserDetailPage({
   const owner = await requireOwner();
   const { id } = await params;
 
-  const [user, branches] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
+  let user: any = null;
+  let branches: { id: string; shortName: string }[] = [];
+
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({ id: b.id, shortName: b.shortName }));
+    const mockUsers = [
+      {
+        id: "mock_owner",
+        name: "Dr. Srikanth Rao (Administrator)",
+        email: "owner@ambikapucollege.edu.in",
+        role: Role.OWNER,
         isActive: true,
         allBranches: true,
-        mustChangePassword: true,
-        lastLoginAt: true,
-        createdAt: true,
-        capabilities: { select: { capability: true } },
-        branchAccess: { select: { branchId: true } },
+        mustChangePassword: false,
+        lastLoginAt: new Date(),
+        createdAt: new Date("2024-01-01"),
+        capabilities: [],
+        branchAccess: [],
       },
-    }),
-    prisma.branch.findMany({
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, shortName: true },
-    }),
-  ]);
+      {
+        id: "mock_office",
+        name: "Administration Office (Staff)",
+        email: "office@ambikapucollege.edu.in",
+        role: Role.COLLEGE_ADMIN,
+        isActive: true,
+        allBranches: false,
+        mustChangePassword: false,
+        lastLoginAt: new Date(Date.now() - 86400000),
+        createdAt: new Date("2024-01-01"),
+        capabilities: [
+          { capability: Capability.APPLICATION_VIEW },
+          { capability: Capability.APPLICATION_MANAGE },
+          { capability: Capability.NEWS_VIEW },
+          { capability: Capability.NEWS_MANAGE },
+          { capability: Capability.CONTACT_VIEW },
+        ],
+        branchAccess: [
+          { branchId: "branch_nellikatte" },
+          { branchId: "branch_bappalige" },
+        ],
+      },
+    ];
+    user = mockUsers.find((u) => u.id === id) ?? mockUsers[1];
+  } else {
+    try {
+      const [dbUser, dbBranches] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            isActive: true,
+            allBranches: true,
+            mustChangePassword: true,
+            lastLoginAt: true,
+            createdAt: true,
+            capabilities: { select: { capability: true } },
+            branchAccess: { select: { branchId: true } },
+          },
+        }),
+        prisma.branch.findMany({
+          orderBy: { orderIndex: "asc" },
+          select: { id: true, shortName: true },
+        }),
+      ]);
+      user = dbUser;
+      branches = dbBranches;
+    } catch (err) {
+      console.error("User detail query error:", err);
+    }
+  }
 
   if (!user) notFound();
 
@@ -105,9 +157,9 @@ export default async function UserDetailPage({
             <EditUserForm
               userId={user.id}
               groups={CAPABILITY_GROUPS}
-              granted={user.capabilities.map((row) => row.capability)}
+              granted={user.capabilities.map((row: any) => row.capability)}
               branches={branches}
-              branchIds={user.branchAccess.map((row) => row.branchId)}
+              branchIds={user.branchAccess.map((row: any) => row.branchId)}
               allBranches={user.allBranches}
               isActive={user.isActive}
             />

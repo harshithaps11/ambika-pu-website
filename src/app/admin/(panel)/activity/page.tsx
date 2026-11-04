@@ -1,6 +1,7 @@
 import { AdminPageHeader, DataTable, EmptyState, Panel } from "@/components/admin/ui";
 import { Pagination } from "@/components/ui/pagination";
 import { Capability } from "@/generated/prisma/enums";
+import { isDatabaseConfigured } from "@/lib/data/mock-data";
 import { requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDateTime } from "@/lib/utils";
@@ -18,15 +19,38 @@ export default async function ActivityPage({
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
-  const [entries, total] = await Promise.all([
-    prisma.auditLog.findMany({
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PER_PAGE,
-      take: PER_PAGE,
-      include: { user: { select: { name: true, email: true } } },
-    }),
-    prisma.auditLog.count(),
-  ]);
+  let entries: any[] = [];
+  let total = 0;
+
+  if (!isDatabaseConfigured()) {
+    entries = [
+      {
+        id: "mock_audit_1",
+        action: "auth.login",
+        entity: "User",
+        summary: "owner@ambikapucollege.edu.in",
+        createdAt: new Date(),
+        user: { name: "Dr. Srikanth Rao (Administrator)", email: "owner@ambikapucollege.edu.in" },
+      },
+    ];
+    total = 1;
+  } else {
+    try {
+      const [dbEntries, dbTotal] = await Promise.all([
+        prisma.auditLog.findMany({
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * PER_PAGE,
+          take: PER_PAGE,
+          include: { user: { select: { name: true, email: true } } },
+        }),
+        prisma.auditLog.count(),
+      ]);
+      entries = dbEntries;
+      total = dbTotal;
+    } catch (err) {
+      console.error("Activity query error:", err);
+    }
+  }
 
   return (
     <>

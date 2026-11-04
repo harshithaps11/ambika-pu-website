@@ -42,7 +42,7 @@ export function Button({
 }: CommonProps & ComponentProps<"button">) {
   return (
     <button
-      className={cn(base, variants[variant], sizes[size], "rounded-sm", className)}
+      className={cn(base, variants[variant], sizes[size], "rounded-lg", className)}
       {...props}
     >
       {children}
@@ -59,7 +59,7 @@ export function ButtonLink({
 }: CommonProps & ComponentProps<typeof Link>) {
   return (
     <Link
-      className={cn(base, variants[variant], sizes[size], "rounded-sm", className)}
+      className={cn(base, variants[variant], sizes[size], "rounded-lg", className)}
       {...props}
     >
       {children}

@@ -37,7 +37,7 @@ export function NewsList({
           >
             <time
               dateTime={new Date(item.publishedAt).toISOString()}
-              className="shrink-0 text-[0.78rem] font-semibold uppercase tracking-wider text-brand-700 sm:w-28 sm:pt-0.5"
+              className="shrink-0 font-sans text-[0.78rem] font-semibold uppercase tracking-wider tabular-nums text-brand-700 sm:w-28 sm:pt-0.5"
             >
               {formatDate(item.publishedAt)}
             </time>

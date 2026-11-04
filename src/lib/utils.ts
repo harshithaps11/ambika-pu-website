@@ -80,12 +80,22 @@ export function truncate(value: string, length = 160) {
   return `${value.slice(0, length - 1).trimEnd()}…`;
 }
 
-/** Renders a 10-digit Indian mobile number as "98765 43210". */
+/** Formats Indian phone numbers with professional spacing (mobile, landline STD, or +91). */
 export function formatPhone(value: string | null | undefined) {
   if (!value) return "";
-  const digits = value.replace(/\D/g, "");
-  if (digits.length === 10) return `${digits.slice(0, 5)} ${digits.slice(5)}`;
-  return value;
+  const cleaned = value.trim();
+  const digits = cleaned.replace(/\D/g, "");
+  if (digits.length === 12 && digits.startsWith("91")) {
+    const rest = digits.slice(2);
+    return `+91 ${rest.slice(0, 5)} ${rest.slice(5)}`;
+  }
+  if (digits.length === 10) {
+    return `${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  if (digits.length === 11 && digits.startsWith("0")) {
+    return `${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return cleaned;
 }
 
 export function telHref(value: string | null | undefined) {

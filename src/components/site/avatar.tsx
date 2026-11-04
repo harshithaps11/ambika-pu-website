@@ -22,9 +22,18 @@ export function Avatar({
   name: string;
   src?: string | null;
   className?: string;
-  rounded?: "full" | "sm";
+  rounded?: "full" | "sm" | "md" | "lg" | "xl" | "2xl";
 }) {
-  const shape = rounded === "full" ? "rounded-full" : "rounded-sm";
+  const shape =
+    rounded === "full"
+      ? "rounded-full"
+      : rounded === "2xl"
+      ? "rounded-2xl"
+      : rounded === "xl"
+      ? "rounded-xl"
+      : rounded === "md"
+      ? "rounded-md"
+      : "rounded-xl";
 
   if (src) {
     return (

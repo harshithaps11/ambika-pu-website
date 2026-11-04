@@ -87,7 +87,7 @@ return (
           {slides[index].ctaUrl && slides[index].ctaLabel ? (
             <Link
               href={slides[index].ctaUrl}
-              className="mt-5 inline-flex h-11 items-center rounded-sm bg-gold-500 px-7 text-[0.85rem] font-bold uppercase tracking-wider text-ink-900 transition-colors hover:bg-gold-400 sm:mt-7"
+              className="mt-5 inline-flex h-11 items-center rounded-lg bg-gold-500 px-7 text-[0.85rem] font-bold uppercase tracking-wider text-ink-900 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:bg-gold-400 sm:mt-7"
             >
               {slides[index].ctaLabel}
             </Link>
@@ -101,7 +101,7 @@ return (
             type="button"
             onClick={() => go(index - 1)}
             aria-label="Previous slide"
-            className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm bg-black/35 text-white transition-colors hover:bg-black/60 sm:flex"
+            className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white shadow-md backdrop-blur-xs transition-all duration-200 hover:scale-110 hover:bg-black/75 cursor-pointer sm:flex"
           >
             <Arrow direction="left" />
           </button>
@@ -109,7 +109,7 @@ return (
             type="button"
             onClick={() => go(index + 1)}
             aria-label="Next slide"
-            className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm bg-black/35 text-white transition-colors hover:bg-black/60 sm:flex"
+            className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white shadow-md backdrop-blur-xs transition-all duration-200 hover:scale-110 hover:bg-black/75 cursor-pointer sm:flex"
           >
             <Arrow direction="right" />
           </button>

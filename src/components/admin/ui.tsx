@@ -40,7 +40,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={cn("border border-ink-200 bg-white shadow-card", className)}>
+    <section className={cn("overflow-hidden rounded-2xl border border-ink-200/90 bg-white shadow-card", className)}>
       {title ? (
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-200 px-5 py-3.5">
           <div>
@@ -92,7 +92,7 @@ export function StatCard({
   );
 
   const classes =
-    "block border border-ink-200 bg-white px-5 py-4 shadow-card transition-shadow";
+    "block rounded-xl border border-ink-200/90 bg-white px-5 py-4 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-raise";
 
   return href ? (
     <Link href={href} className={cn(classes, "hover:shadow-raise")}>
@@ -184,7 +184,7 @@ export function StatusPill({ status }: { status: keyof typeof STATUS_TONES }) {
   return (
     <span
       className={cn(
-        "inline-flex whitespace-nowrap rounded-sm border px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wider",
+        "inline-flex whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wider shadow-2xs",
         STATUS_TONES[status],
       )}
     >

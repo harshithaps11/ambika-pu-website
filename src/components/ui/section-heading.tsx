@@ -39,7 +39,7 @@ export function SectionHeading({
 
       <h2
         className={cn(
-          "rule-gold text-2xl font-semibold sm:text-[1.75rem]",
+          "rule-gold text-2xl font-semibold tabular-nums sm:text-[1.75rem]",
           align === "center" && "rule-gold-center",
           tone === "light" && "text-white",
         )}

@@ -59,7 +59,7 @@ export default async function AboutPage() {
             <div className="mt-5">{about?.body ? <Prose body={about.body} /> : null}</div>
           </div>
 
-          <aside className="h-fit border border-ink-200 bg-ink-50 p-5">
+          <aside className="h-fit rounded-2xl border border-ink-200/90 bg-white p-6 shadow-card">
             <h2 className="font-serif text-base font-semibold text-ink-900">
               At a glance
             </h2>
@@ -92,14 +92,16 @@ export default async function AboutPage() {
       <StatsStrip stats={stats} />
 
       {visionMission?.body ? (
-        <section id="vision" className="scroll-mt-16 bg-ink-50 py-12">
+        <section id="vision" className="scroll-mt-16 bg-texture-subtle py-14">
           <div className="container-site max-w-3xl">
-            <SectionHeading
-              eyebrow="What we work towards"
-              title={visionMission.title ?? "Vision & Mission"}
-            />
-            <div className="mt-5">
-              <Prose body={visionMission.body} />
+            <div className="rounded-2xl border border-ink-200/90 bg-white p-8 shadow-card">
+              <SectionHeading
+                eyebrow="What we work towards"
+                title={visionMission.title ?? "Vision & Mission"}
+              />
+              <div className="mt-5">
+                <Prose body={visionMission.body} />
+              </div>
             </div>
           </div>
         </section>

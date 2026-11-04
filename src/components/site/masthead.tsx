@@ -21,8 +21,11 @@ export function Masthead({
   return (
     <div className="border-b border-ink-200 bg-white">
       <div className="container-wide flex items-center justify-between gap-4 py-2 sm:py-2.5">
-        <Link href={homeHref} className="flex items-center gap-3.5 sm:gap-4">
-          <Crest className="h-11 text-brand-700 sm:h-12 lg:h-14 shrink-0" />
+        <Link href={homeHref} className="flex items-center gap-3.5 sm:gap-4 group">
+          <Crest
+            priority
+            className="h-12 w-auto sm:h-14 lg:h-16 shrink-0 transition-transform duration-300 group-hover:scale-105"
+          />
 
           <span className="block">
             <span className="block font-serif text-[1.05rem] font-semibold leading-tight text-ink-900 sm:text-[1.3rem] lg:text-[1.5rem]">
@@ -46,7 +49,7 @@ export function Masthead({
             <ButtonLink href={applyHref} variant="gold" size="sm" className="font-bold uppercase tracking-wider">
               {admissionOpen ? "Apply Online" : "Admission Enquiry"}
             </ButtonLink>
-            <span className="text-[0.64rem] text-ink-500">
+            <span className="text-[0.64rem] text-ink-500 font-sans tabular-nums">
               Admissions {admissionOpen ? "open" : "enquiries"} for {new Date().getFullYear()}–
               {String(new Date().getFullYear() + 1).slice(2)}
             </span>

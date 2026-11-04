@@ -43,7 +43,7 @@ export default async function ContactPage() {
                 <p className="mt-1">
                   <a
                     href={telHref(site.contact.phone)}
-                    className="font-semibold text-brand-700 underline underline-offset-4"
+                    className="font-sans font-semibold tabular-nums tracking-normal text-brand-700 underline underline-offset-4"
                   >
                     {formatPhone(site.contact.phone) || site.contact.phone}
                   </a>
@@ -79,7 +79,7 @@ export default async function ContactPage() {
                       {branch.phone ? (
                         <a
                           href={telHref(branch.phone)}
-                          className="font-semibold text-brand-700 underline underline-offset-4"
+                          className="font-sans font-semibold tabular-nums tracking-normal text-brand-700 underline underline-offset-4"
                         >
                           {formatPhone(branch.phone) || branch.phone}
                         </a>

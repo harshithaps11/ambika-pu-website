@@ -3,7 +3,8 @@ import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
-import type { Capability, Role } from "@/generated/prisma/enums";
+import { Capability, Role } from "@/generated/prisma/enums";
+import { isDatabaseConfigured } from "./data/mock-data";
 
 const SESSION_COOKIE = "ambika_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 8; // one working day
@@ -103,42 +104,103 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      isActive: true,
-      allBranches: true,
-      mustChangePassword: true,
-      sessionVersion: true,
-      capabilities: { select: { capability: true } },
-      branchAccess: { select: { branchId: true } },
-    },
-  });
-
-  if (!user || !user.isActive || user.sessionVersion !== tokenVersion) {
+  // --- Development Mock User Fallback ---
+  if (!isDatabaseConfigured()) {
+    if (userId === "mock_owner") {
+      return {
+        id: "mock_owner",
+        name: "Dr. Srikanth Rao (Campus Administrator)",
+        email: "owner@ambikapucollege.edu.in",
+        role: Role.OWNER,
+        allBranches: true,
+        mustChangePassword: false,
+        capabilities: [
+          Capability.NEWS_VIEW,
+          Capability.NEWS_MANAGE,
+          Capability.APPLICATION_VIEW,
+          Capability.APPLICATION_MANAGE,
+          Capability.APPLICATION_EXPORT,
+          Capability.COURSE_MANAGE,
+          Capability.FACULTY_MANAGE,
+          Capability.GALLERY_MANAGE,
+          Capability.TOPPER_MANAGE,
+          Capability.PAGE_MANAGE,
+          Capability.FAQ_MANAGE,
+          Capability.CONTACT_VIEW,
+          Capability.SETTINGS_MANAGE,
+          Capability.AUDIT_VIEW,
+        ],
+        branchIds: ["branch_nellikatte", "branch_bappalige"],
+      };
+    }
+    if (userId === "mock_office") {
+      return {
+        id: "mock_office",
+        name: "Administrative Office (College Staff)",
+        email: "office@ambikapucollege.edu.in",
+        role: Role.COLLEGE_ADMIN,
+        allBranches: false,
+        mustChangePassword: false,
+        capabilities: [
+          Capability.APPLICATION_VIEW,
+          Capability.APPLICATION_MANAGE,
+          Capability.NEWS_VIEW,
+          Capability.NEWS_MANAGE,
+          Capability.GALLERY_MANAGE,
+          Capability.CONTACT_VIEW,
+        ],
+        branchIds: ["branch_nellikatte", "branch_bappalige"],
+      };
+    }
     return null;
   }
 
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    allBranches: user.allBranches,
-    mustChangePassword: user.mustChangePassword,
-    capabilities: user.capabilities.map((row) => row.capability),
-    branchIds: user.branchAccess.map((row) => row.branchId),
-  };
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        isActive: true,
+        allBranches: true,
+        mustChangePassword: true,
+        sessionVersion: true,
+        capabilities: { select: { capability: true } },
+        branchAccess: { select: { branchId: true } },
+      },
+    });
+
+    if (!user || !user.isActive || user.sessionVersion !== tokenVersion) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      allBranches: user.allBranches,
+      mustChangePassword: user.mustChangePassword,
+      capabilities: user.capabilities.map((row) => row.capability),
+      branchIds: user.branchAccess.map((row) => row.branchId),
+    };
+  } catch (error) {
+    console.error("getCurrentUser database connection error:", error);
+    return null;
+  }
 });
 
 /** Signs every active session for a user out at once. */
 export async function revokeAllSessions(userId: string) {
-  await prisma.user.update({
-    where: { id: userId },
-    data: { sessionVersion: { increment: 1 } },
-  });
+  if (!isDatabaseConfigured()) return;
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { sessionVersion: { increment: 1 } },
+    });
+  } catch (error) {
+    console.error("revokeAllSessions database error:", error);
+  }
 }

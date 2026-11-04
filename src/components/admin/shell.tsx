@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Crest } from "@/components/brand/crest";
 import { cn } from "@/lib/utils";
 
 export type AdminNavItem = {
@@ -52,12 +53,19 @@ export function AdminSidebar({
         )}
       >
         <div className="hidden border-b border-white/10 px-5 py-4 lg:block">
-          <p className="font-serif text-[1.05rem] font-semibold leading-tight text-white">
-            Ambika PU
-          </p>
-          <p className="mt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
-            Administration
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white p-1 shadow-xs shrink-0">
+              <Crest className="h-full w-auto object-contain" />
+            </div>
+            <div>
+              <p className="font-serif text-[1.05rem] font-semibold leading-tight text-white">
+                Ambika PU
+              </p>
+              <p className="mt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
+                Administration
+              </p>
+            </div>
+          </div>
         </div>
 
         <nav aria-label="Admin sections" className="px-3 py-4">

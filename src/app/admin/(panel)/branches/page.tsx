@@ -3,6 +3,7 @@ import { AdminPageHeader, Panel } from "@/components/admin/ui";
 import { ResourceForm, type FieldSpec } from "@/components/admin/resource-form";
 import { Capability } from "@/generated/prisma/enums";
 import { saveBranchSettings } from "@/lib/actions/content";
+import { isDatabaseConfigured, MOCK_BRANCHES } from "@/lib/data/mock-data";
 import { allowedBranchIds, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
@@ -18,10 +19,20 @@ export default async function BranchesAdminPage({
   const { branch: branchSlug } = await searchParams;
   const allowed = allowedBranchIds(user);
 
-  const branches = await prisma.branch.findMany({
-    where: allowed === null ? {} : { id: { in: allowed } },
-    orderBy: { orderIndex: "asc" },
-  });
+  let branches: any[] = [];
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES;
+  } else {
+    try {
+      branches = await prisma.branch.findMany({
+        where: allowed === null ? {} : { id: { in: allowed } },
+        orderBy: { orderIndex: "asc" },
+      });
+    } catch (err) {
+      console.error("Branches query error:", err);
+      branches = MOCK_BRANCHES;
+    }
+  }
 
   const selected =
     branches.find((branch) => branch.slug === branchSlug) ?? branches[0];

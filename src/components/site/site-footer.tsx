@@ -27,7 +27,9 @@ export function SiteFooter({
       <div className="container-wide grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
         <div className="lg:pr-6">
           <div className="flex items-center gap-3">
-            <Crest className="h-12 text-white/90" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white p-1 shadow-xs shrink-0">
+              <Crest className="h-full w-auto object-contain" />
+            </div>
             <span className="font-serif text-[1.05rem] font-semibold leading-tight text-white">
               {site.name}
             </span>
@@ -92,7 +94,10 @@ export function SiteFooter({
           <address className="space-y-2.5 text-[0.84rem] not-italic leading-relaxed">
             <p>{address}</p>
             <p>
-              <a href={telHref(phone)} className="transition-colors hover:text-gold-300">
+              <a
+                href={telHref(phone)}
+                className="font-sans font-medium tabular-nums tracking-normal transition-colors hover:text-gold-300"
+              >
                 {formatPhone(phone) || phone}
               </a>
             </p>
@@ -108,7 +113,7 @@ export function SiteFooter({
       <div className="border-t border-white/10">
         <div className="container-wide flex flex-col items-center justify-between gap-2 py-4 text-[0.75rem] sm:flex-row">
           <p>
-            © {year} {site.name}. All rights reserved.
+            © <span className="font-sans tabular-nums">{year}</span> {site.name}. All rights reserved.
           </p>
           <p className="flex items-center gap-3">
             <Link href="/admin/login" className="transition-colors hover:text-gold-300">

@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { Capability } from "@/generated/prisma/enums";
 import { deleteNewsItem, toggleNewsFlag } from "@/lib/actions/news";
+import { isDatabaseConfigured, MOCK_NEWS } from "@/lib/data/mock-data";
 import {
   branchScopeFilterWithGlobal,
   can,
@@ -35,26 +36,65 @@ export default async function AdminNewsPage({
   const where = branchScopeFilterWithGlobal(user);
   const editable = can(user, Capability.NEWS_MANAGE);
 
-  const [items, total] = await Promise.all([
-    prisma.newsItem.findMany({
-      where,
-      orderBy: [{ publishedAt: "desc" }],
-      skip: (page - 1) * PER_PAGE,
-      take: PER_PAGE,
-      select: {
-        id: true,
-        title: true,
-        category: true,
-        isPublished: true,
-        isTicker: true,
-        isPinned: true,
-        publishedAt: true,
-        expiresAt: true,
-        branch: { select: { shortName: true } },
-      },
-    }),
-    prisma.newsItem.count({ where }),
-  ]);
+  let items: {
+    id: string;
+    title: string;
+    category: any;
+    isPublished: boolean;
+    isTicker: boolean;
+    isPinned: boolean;
+    publishedAt: Date;
+    expiresAt: Date | null;
+    branch: { shortName: string } | null;
+  }[] = [];
+  let total = 0;
+
+  if (!isDatabaseConfigured()) {
+    items = MOCK_NEWS.map((item) => ({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      isPublished: item.isPublished,
+      isTicker: item.isTicker,
+      isPinned: item.isPinned,
+      publishedAt: item.publishedAt,
+      expiresAt: item.expiresAt,
+      branch:
+        item.branchId === "branch_nellikatte"
+          ? { shortName: "Nellikatte Campus" }
+          : item.branchId === "branch_bappalige"
+            ? { shortName: "Bappalige Campus" }
+            : null,
+    }));
+    total = items.length;
+  } else {
+    try {
+      const [dbItems, dbTotal] = await Promise.all([
+        prisma.newsItem.findMany({
+          where,
+          orderBy: [{ publishedAt: "desc" }],
+          skip: (page - 1) * PER_PAGE,
+          take: PER_PAGE,
+          select: {
+            id: true,
+            title: true,
+            category: true,
+            isPublished: true,
+            isTicker: true,
+            isPinned: true,
+            publishedAt: true,
+            expiresAt: true,
+            branch: { select: { shortName: true } },
+          },
+        }),
+        prisma.newsItem.count({ where }),
+      ]);
+      items = dbItems;
+      total = dbTotal;
+    } catch (err) {
+      console.error("News query error:", err);
+    }
+  }
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
   const now = new Date();

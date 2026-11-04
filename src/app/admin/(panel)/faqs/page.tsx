@@ -4,6 +4,7 @@ import { ResourceForm, type FieldSpec } from "@/components/admin/resource-form";
 import { Badge } from "@/components/ui/badge";
 import { Capability } from "@/generated/prisma/enums";
 import { deleteFaq, saveFaq } from "@/lib/actions/content";
+import { isDatabaseConfigured, MOCK_BRANCHES, MOCK_FAQS } from "@/lib/data/mock-data";
 import { allowedBranchIds, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
@@ -18,18 +19,37 @@ export default async function FaqAdminPage({
   const { edit } = await searchParams;
   const allowed = allowedBranchIds(user);
 
-  const [branches, rows, editing] = await Promise.all([
-    prisma.branch.findMany({
-      where: allowed === null ? {} : { id: { in: allowed } },
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, shortName: true },
-    }),
-    prisma.faqEntry.findMany({
-      orderBy: [{ orderIndex: "asc" }],
-      include: { branch: { select: { shortName: true } } },
-    }),
-    edit ? prisma.faqEntry.findUnique({ where: { id: edit } }) : Promise.resolve(null),
-  ]);
+  let branches: { id: string; shortName: string }[] = [];
+  let rows: any[] = [];
+  let editing: any = null;
+
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({ id: b.id, shortName: b.shortName }));
+    rows = MOCK_FAQS.map((f) => ({
+      ...f,
+      branch: f.branchId === "branch_nellikatte" ? { shortName: "Nellikatte Campus" } : null,
+    }));
+  } else {
+    try {
+      const [dbBranches, dbRows, dbEditing] = await Promise.all([
+        prisma.branch.findMany({
+          where: allowed === null ? {} : { id: { in: allowed } },
+          orderBy: { orderIndex: "asc" },
+          select: { id: true, shortName: true },
+        }),
+        prisma.faqEntry.findMany({
+          orderBy: [{ orderIndex: "asc" }],
+          include: { branch: { select: { shortName: true } } },
+        }),
+        edit ? prisma.faqEntry.findUnique({ where: { id: edit } }) : Promise.resolve(null),
+      ]);
+      branches = dbBranches;
+      rows = dbRows;
+      editing = dbEditing;
+    } catch (err) {
+      console.error("FAQs query error:", err);
+    }
+  }
 
   const branchOptions = [
     ...(allowed === null

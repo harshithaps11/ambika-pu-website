@@ -171,7 +171,7 @@ export function NewsSlider({
   return (
     <section
       aria-label="News Highlights"
-      className="group/slider relative flex h-full flex-col overflow-hidden rounded-xs border border-ink-200/90 bg-white shadow-card transition-all duration-300 hover:shadow-raise"
+      className="group/slider relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-200/90 bg-white shadow-card transition-all duration-300 hover:shadow-raise"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -229,7 +229,7 @@ export function NewsSlider({
                 {currentSlide.category}
               </Badge>
 
-              <span className="rounded-full bg-black/60 px-2.5 py-1 text-[0.68rem] font-medium text-white/90 backdrop-blur-xs">
+              <span className="rounded-full bg-black/60 px-2.5 py-1 text-[0.68rem] font-sans font-medium tabular-nums text-white/90 backdrop-blur-xs">
                 {formattedDate}
               </span>
             </div>
@@ -237,7 +237,7 @@ export function NewsSlider({
             {/* Campus Tag (if available) */}
             {currentSlide.branchName ? (
               <div className="absolute bottom-3 left-3">
-                <span className="rounded-xs bg-gold-500/90 px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-wider text-ink-950">
+                <span className="rounded-md bg-gold-500/95 px-2.5 py-0.5 text-[0.68rem] font-bold uppercase tracking-wider text-ink-950 shadow-xs">
                   {currentSlide.branchName}
                 </span>
               </div>
@@ -291,7 +291,7 @@ export function NewsSlider({
                 type="button"
                 onClick={() => go(index - 1)}
                 aria-label="Previous slide"
-                className="flex h-7 w-7 items-center justify-center rounded-xs border border-ink-200 bg-white text-ink-700 shadow-2xs transition-all hover:border-brand-700 hover:bg-brand-50 hover:text-brand-700 active:translate-y-0.5"
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-ink-200 bg-white text-ink-700 shadow-xs transition-all hover:border-brand-700 hover:bg-brand-50 hover:text-brand-700 active:translate-y-0.5 cursor-pointer"
               >
                 <Arrow direction="left" />
               </button>
@@ -299,7 +299,7 @@ export function NewsSlider({
                 type="button"
                 onClick={() => go(index + 1)}
                 aria-label="Next slide"
-                className="flex h-7 w-7 items-center justify-center rounded-xs border border-ink-200 bg-white text-ink-700 shadow-2xs transition-all hover:border-brand-700 hover:bg-brand-50 hover:text-brand-700 active:translate-y-0.5"
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-ink-200 bg-white text-ink-700 shadow-xs transition-all hover:border-brand-700 hover:bg-brand-50 hover:text-brand-700 active:translate-y-0.5 cursor-pointer"
               >
                 <Arrow direction="right" />
               </button>

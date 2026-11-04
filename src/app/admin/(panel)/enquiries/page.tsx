@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { Capability } from "@/generated/prisma/enums";
 import { toggleEnquiryRead } from "@/lib/actions/content";
+import { isDatabaseConfigured } from "@/lib/data/mock-data";
 import { branchScopeFilterWithGlobal, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDateTime, telHref } from "@/lib/utils";
@@ -22,16 +23,53 @@ export default async function EnquiriesPage({
 
   const where = branchScopeFilterWithGlobal(user);
 
-  const [messages, total] = await Promise.all([
-    prisma.contactMessage.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PER_PAGE,
-      take: PER_PAGE,
-      include: { branch: { select: { shortName: true } } },
-    }),
-    prisma.contactMessage.count({ where }),
-  ]);
+  let messages: any[] = [];
+  let total = 0;
+
+  if (!isDatabaseConfigured()) {
+    messages = [
+      {
+        id: "mock_enquiry_1",
+        name: "Sunil Kumar",
+        phone: "9845112233",
+        email: "sunil.k@example.com",
+        subject: "Admission inquiry for Science (PCMB) 2025-26",
+        message: "Kindly inform regarding hostel facilities and fee structure for PCMB.",
+        isRead: false,
+        createdAt: new Date(Date.now() - 3600000 * 2),
+        branch: { shortName: "Nellikatte Campus" },
+      },
+      {
+        id: "mock_enquiry_2",
+        name: "Meenakshi Bhat",
+        phone: "9845223344",
+        email: "meenakshi@example.com",
+        subject: "Bus transport routes near Kabaka",
+        message: "Does the college bus cover the Kabaka junction route for morning shifts?",
+        isRead: true,
+        createdAt: new Date(Date.now() - 86400000 * 2),
+        branch: { shortName: "Bappalige Campus" },
+      },
+    ];
+    total = 2;
+  } else {
+    try {
+      const [dbMessages, dbTotal] = await Promise.all([
+        prisma.contactMessage.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * PER_PAGE,
+          take: PER_PAGE,
+          include: { branch: { select: { shortName: true } } },
+        }),
+        prisma.contactMessage.count({ where }),
+      ]);
+      messages = dbMessages;
+      total = dbTotal;
+    } catch (err) {
+      console.error("Enquiries query error:", err);
+    }
+  }
 
   return (
     <>

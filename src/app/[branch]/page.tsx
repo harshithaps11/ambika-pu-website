@@ -155,28 +155,32 @@ export default async function BranchHomePage({
         </section>
       ) : null}
 
-      <section
-        className="relative overflow-hidden py-14 bg-texture-dark border-t-2 border-gold-500/30"
-        style={{ backgroundColor: "var(--branch-color)" }}
-      >
-        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
-        <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-black/25 blur-3xl" />
-        <div className="container-site relative flex flex-col items-center gap-5 text-center lg:flex-row lg:justify-between lg:text-left">
-          <div>
-            <h2 className="font-serif text-[1.55rem] font-semibold text-white">
-              {branch.admissionOpen
-                ? "Admissions are open at this campus"
-                : "Admission enquiries welcome"}
-            </h2>
-            <p className="mt-1.5 text-[0.92rem] text-white/85">
-              Fill the online form and our office will call you to arrange document
-              verification.
-            </p>
-          </div>
+      <section className="scroll-mt-16 py-16 bg-white">
+        <div className="container-site">
+          <div
+            className="relative overflow-hidden rounded-3xl bg-texture-dark p-8 sm:p-12 shadow-raise border-2 border-gold-500/30"
+            style={{ backgroundColor: "var(--branch-color)" }}
+          >
+            <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
+            <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-black/25 blur-3xl" />
+            <div className="relative flex flex-col items-center gap-5 text-center lg:flex-row lg:justify-between lg:text-left">
+              <div>
+                <h2 className="font-serif text-[1.65rem] font-semibold text-white">
+                  {branch.admissionOpen
+                    ? "Admissions are open at this campus"
+                    : "Admission enquiries welcome"}
+                </h2>
+                <p className="mt-2 text-[0.94rem] text-white/85 max-w-2xl">
+                  Fill the online form and our office will call you to arrange document
+                  verification.
+                </p>
+              </div>
 
-          <ButtonLink href={`${base}/admissions`} variant="gold" size="lg">
-            Apply Online
-          </ButtonLink>
+              <ButtonLink href={`${base}/admissions`} variant="gold" size="lg">
+                Apply Online
+              </ButtonLink>
+            </div>
+          </div>
         </div>
       </section>
     </>

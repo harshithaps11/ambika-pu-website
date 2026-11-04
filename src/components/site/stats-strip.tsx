@@ -15,10 +15,10 @@ export function StatsStrip({ stats }: { stats: Stat[] }) {
             key={stat.id}
             className="group border-l border-white/15 px-5 first:border-l-0 lg:px-6 transition-all duration-300 hover:bg-white/5 rounded-xs py-2"
           >
-            <p className="font-serif text-[2.2rem] font-semibold leading-none text-gold-400 sm:text-[2.6rem] transition-transform duration-300 group-hover:translate-x-1">
+            <p className="font-sans font-black text-[2.4rem] tracking-tight leading-none text-gold-400 sm:text-[2.85rem] tabular-nums transition-transform duration-300 group-hover:translate-x-1">
               {stat.value.toLocaleString("en-IN")}
               {stat.suffix ? (
-                <span className="text-[1.4rem] text-gold-300">{stat.suffix}</span>
+                <span className="ml-0.5 text-[1.5rem] font-bold text-gold-300">{stat.suffix}</span>
               ) : null}
             </p>
             <p className="mt-2 text-[0.78rem] font-medium uppercase tracking-[0.12em] text-white/75 transition-colors duration-200 group-hover:text-white">

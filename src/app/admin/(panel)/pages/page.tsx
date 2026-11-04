@@ -3,6 +3,7 @@ import { AdminPageHeader, DataTable, EmptyState, Panel } from "@/components/admi
 import { ResourceForm, type FieldSpec } from "@/components/admin/resource-form";
 import { Capability } from "@/generated/prisma/enums";
 import { savePageContent } from "@/lib/actions/content";
+import { isDatabaseConfigured, MOCK_BRANCHES, MOCK_PAGE_CONTENT } from "@/lib/data/mock-data";
 import { allowedBranchIds, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDateTime } from "@/lib/utils";
@@ -26,18 +27,42 @@ export default async function PagesAdminPage({
   const { edit } = await searchParams;
   const allowed = allowedBranchIds(user);
 
-  const [branches, rows, editing] = await Promise.all([
-    prisma.branch.findMany({
-      where: allowed === null ? {} : { id: { in: allowed } },
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, shortName: true },
-    }),
-    prisma.pageContent.findMany({
-      orderBy: [{ key: "asc" }],
-      include: { branch: { select: { shortName: true } } },
-    }),
-    edit ? prisma.pageContent.findUnique({ where: { id: edit } }) : Promise.resolve(null),
-  ]);
+  let branches: { id: string; shortName: string }[] = [];
+  let rows: any[] = [];
+  let editing: any = null;
+
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({ id: b.id, shortName: b.shortName }));
+    rows = Object.entries(MOCK_PAGE_CONTENT).map(([key, val]) => ({
+      id: `mock_page_${key}`,
+      key,
+      branchId: null,
+      title: val.title,
+      body: val.body,
+      updatedAt: new Date(),
+      branch: null,
+    }));
+  } else {
+    try {
+      const [dbBranches, dbRows, dbEditing] = await Promise.all([
+        prisma.branch.findMany({
+          where: allowed === null ? {} : { id: { in: allowed } },
+          orderBy: { orderIndex: "asc" },
+          select: { id: true, shortName: true },
+        }),
+        prisma.pageContent.findMany({
+          orderBy: [{ key: "asc" }],
+          include: { branch: { select: { shortName: true } } },
+        }),
+        edit ? prisma.pageContent.findUnique({ where: { id: edit } }) : Promise.resolve(null),
+      ]);
+      branches = dbBranches;
+      rows = dbRows;
+      editing = dbEditing;
+    } catch (err) {
+      console.error("Pages query error:", err);
+    }
+  }
 
   const branchOptions = [
     ...(allowed === null ? [{ value: "", label: "Main site (institution-wide)" }] : []),

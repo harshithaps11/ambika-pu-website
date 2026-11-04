@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminPageHeader, Panel, StatusPill } from "@/components/admin/ui";
-import { Capability } from "@/generated/prisma/enums";
+import { ApplicationStatus, Capability } from "@/generated/prisma/enums";
+import { isDatabaseConfigured } from "@/lib/data/mock-data";
 import { can, canAccessBranch, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatDateTime, telHref } from "@/lib/utils";
@@ -24,14 +25,67 @@ export default async function ApplicationDetailPage({ params }: Props) {
   const { id } = await params;
   const user = await requireCapability(Capability.APPLICATION_VIEW);
 
-  const application = await prisma.application.findUnique({
-    where: { id },
-    include: {
-      branch: { select: { shortName: true, slug: true } },
-      course: { select: { code: true, name: true } },
-      reviewedBy: { select: { name: true } },
-    },
-  });
+  let application: any = null;
+
+  if (!isDatabaseConfigured()) {
+    application = {
+      id,
+      applicationNo: "AMB-NLK-2026-00001",
+      branchId: "branch_nellikatte",
+      courseId: "course_nel_pcmb",
+      studentName: "Aishwarya Hegde",
+      dateOfBirth: new Date(2009, 4, 15),
+      gender: "FEMALE",
+      email: "aishwarya.sample@example.com",
+      phone: "9845012345",
+      altPhone: "9845099999",
+      fatherName: "Shri. Ramesh Hegde",
+      motherName: "Smt. Geetha Hegde",
+      guardianPhone: "9845012345",
+      guardianOccupation: "Agriculture / Business",
+      addressLine1: "Near Mahalingeshwara Temple",
+      addressLine2: "Main Road",
+      city: "Puttur",
+      district: "Dakshina Kannada",
+      state: "Karnataka",
+      pincode: "574201",
+      category: "General",
+      sslcBoard: "Karnataka Secondary Education Examination Board (KSEEB)",
+      sslcSchool: "Vivekananda High School, Puttur",
+      sslcYear: 2025,
+      sslcRegisterNo: "2025091283",
+      sslcMarks: 580,
+      sslcMaxMarks: 625,
+      sslcPercentage: 92.8,
+      preferredCombination: "PCMB",
+      secondLanguage: "Kannada",
+      hostelRequired: true,
+      transportRequired: false,
+      sportsQuota: false,
+      status: ApplicationStatus.SUBMITTED,
+      officeNotes: "Applicant scored distinction in SSLC. Called for initial document verification on Friday.",
+      reviewedAt: null,
+      reviewedById: null,
+      createdAt: new Date(Date.now() - 3600000 * 4),
+      updatedAt: new Date(Date.now() - 3600000 * 4),
+      branch: { shortName: "Nellikatte Campus", slug: "nellikatte" },
+      course: { code: "PCMB", name: "Physics, Chemistry, Mathematics, Biology" },
+      reviewedBy: null,
+    };
+  } else {
+    try {
+      application = await prisma.application.findUnique({
+        where: { id },
+        include: {
+          branch: { select: { shortName: true, slug: true } },
+          course: { select: { code: true, name: true } },
+          reviewedBy: { select: { name: true } },
+        },
+      });
+    } catch (err) {
+      console.error("Application detail query error:", err);
+    }
+  }
 
   if (!application) notFound();
 

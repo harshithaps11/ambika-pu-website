@@ -48,7 +48,10 @@ export default async function BranchResultsPage({ params }: Props) {
           ) : (
             byYear.map((year) => (
               <div key={year}>
-                <SectionHeading eyebrow="Academic year" title={year} />
+                <SectionHeading
+                  eyebrow="Academic year"
+                  title={<span className="font-sans font-bold tabular-nums tracking-normal">{year}</span>}
+                />
                 <div className="mt-7">
                   <ToppersStrip
                     toppers={toppers.filter((topper) => topper.academicYear === year)}

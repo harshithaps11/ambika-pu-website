@@ -28,7 +28,7 @@ export function CourseGrid({
       {courses.map((course) => (
         <li
           key={course.id}
-          className="group relative flex flex-col overflow-hidden rounded-xs border border-ink-200/90 bg-white p-6 shadow-card transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-300 hover:shadow-raise"
+          className="group relative flex flex-col overflow-hidden rounded-2xl border border-ink-200/90 bg-white p-6 shadow-card transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-300 hover:shadow-raise"
         >
           {/* Top highlight bar on hover */}
           <span className="absolute top-0 left-0 right-0 h-1 bg-transparent transition-colors duration-300 group-hover:bg-gold-500" />
@@ -52,7 +52,7 @@ export function CourseGrid({
             {course.subjects.map((subject) => (
               <li
                 key={subject}
-                className="border border-ink-200 bg-ink-50 px-2 py-0.5 text-[0.72rem] text-ink-700"
+                className="rounded-md border border-ink-200 bg-ink-50 px-2.5 py-1 text-[0.72rem] text-ink-700 shadow-2xs"
               >
                 {subject}
               </li>

@@ -4,6 +4,7 @@ import { AdminPageHeader, EmptyState, Panel } from "@/components/admin/ui";
 import { ResourceForm, type FieldSpec } from "@/components/admin/resource-form";
 import { Capability } from "@/generated/prisma/enums";
 import { addAlbumImage, deleteAlbumImage } from "@/lib/actions/content";
+import { isDatabaseConfigured, MOCK_ALBUMS } from "@/lib/data/mock-data";
 import { canAccessBranch, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
@@ -17,13 +18,33 @@ export default async function AlbumImagesPage({
   const { id } = await params;
   const user = await requireCapability(Capability.GALLERY_MANAGE);
 
-  const album = await prisma.galleryAlbum.findUnique({
-    where: { id },
-    include: {
-      images: { orderBy: { orderIndex: "asc" } },
-      branch: { select: { shortName: true } },
-    },
-  });
+  let album: any = null;
+
+  if (!isDatabaseConfigured()) {
+    const found = MOCK_ALBUMS.find((a) => a.id === id) ?? MOCK_ALBUMS[0];
+    album = {
+      ...found,
+      images: found.images.map((url, idx) => ({
+        id: `mock_img_${idx}`,
+        url,
+        caption: `Photograph ${idx + 1}`,
+        orderIndex: idx,
+      })),
+      branch: found.branchId ? { shortName: "Nellikatte Campus" } : null,
+    };
+  } else {
+    try {
+      album = await prisma.galleryAlbum.findUnique({
+        where: { id },
+        include: {
+          images: { orderBy: { orderIndex: "asc" } },
+          branch: { select: { shortName: true } },
+        },
+      });
+    } catch (err) {
+      console.error("Album query error:", err);
+    }
+  }
 
   if (!album || !canAccessBranch(user, album.branchId)) notFound();
 
@@ -66,7 +87,7 @@ export default async function AlbumImagesPage({
             />
           ) : (
             <ul className="grid gap-4 p-5 sm:grid-cols-2">
-              {album.images.map((image) => (
+              {album.images.map((image: any) => (
                 <li key={image.id} className="border border-ink-200">
                   <span
                     className="block h-36 bg-cover bg-center"

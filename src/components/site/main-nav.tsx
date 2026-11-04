@@ -91,7 +91,7 @@ export function MainNav({
                   <ul
                     id={`${menuId}-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                     className={cn(
-                      "absolute left-0 top-full z-50 w-64 border-t-2 border-gold-500 bg-white py-1.5 shadow-raise",
+                      "absolute left-0 top-full z-50 w-64 rounded-b-xl border-t-2 border-gold-500 bg-white py-2 shadow-raise overflow-hidden",
                       openMenu === itemKey ? "block" : "hidden",
                     )}
                   >

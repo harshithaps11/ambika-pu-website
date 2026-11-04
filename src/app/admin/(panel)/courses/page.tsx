@@ -4,6 +4,7 @@ import { ResourceForm, type FieldSpec } from "@/components/admin/resource-form";
 import { Badge } from "@/components/ui/badge";
 import { Capability } from "@/generated/prisma/enums";
 import { deleteCourse, saveCourse } from "@/lib/actions/content";
+import { isDatabaseConfigured, MOCK_BRANCHES, MOCK_COURSES } from "@/lib/data/mock-data";
 import { allowedBranchIds, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
@@ -19,22 +20,45 @@ export default async function CoursesAdminPage({
   const { edit } = await searchParams;
   const allowed = allowedBranchIds(user);
 
-  const [branches, rows, editing] = await Promise.all([
-    prisma.branch.findMany({
-      where: allowed === null ? {} : { id: { in: allowed } },
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, shortName: true },
-    }),
-    prisma.course.findMany({
-      where: allowed === null ? {} : { branchId: { in: allowed } },
-      orderBy: [{ branchId: "asc" }, { orderIndex: "asc" }],
-      include: {
-        branch: { select: { shortName: true } },
-        _count: { select: { applications: true } },
+  let branches: { id: string; shortName: string }[] = [];
+  let rows: any[] = [];
+  let editing: any = null;
+
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({ id: b.id, shortName: b.shortName }));
+    rows = MOCK_COURSES.map((c) => ({
+      ...c,
+      branch: {
+        shortName:
+          c.branchId === "branch_nellikatte" ? "Nellikatte Campus" : "Bappalige Campus",
       },
-    }),
-    edit ? prisma.course.findUnique({ where: { id: edit } }) : Promise.resolve(null),
-  ]);
+      _count: { applications: 8 },
+    }));
+  } else {
+    try {
+      const [dbBranches, dbRows, dbEditing] = await Promise.all([
+        prisma.branch.findMany({
+          where: allowed === null ? {} : { id: { in: allowed } },
+          orderBy: { orderIndex: "asc" },
+          select: { id: true, shortName: true },
+        }),
+        prisma.course.findMany({
+          where: allowed === null ? {} : { branchId: { in: allowed } },
+          orderBy: [{ branchId: "asc" }, { orderIndex: "asc" }],
+          include: {
+            branch: { select: { shortName: true } },
+            _count: { select: { applications: true } },
+          },
+        }),
+        edit ? prisma.course.findUnique({ where: { id: edit } }) : Promise.resolve(null),
+      ]);
+      branches = dbBranches;
+      rows = dbRows;
+      editing = dbEditing;
+    } catch (err) {
+      console.error("Courses query error:", err);
+    }
+  }
 
   const fields: FieldSpec[] = [
     { name: "id", kind: "hidden", value: editing?.id ?? "" },

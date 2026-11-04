@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { Capability } from "@/generated/prisma/enums";
+import { isDatabaseConfigured, MOCK_BRANCHES, MOCK_NEWS } from "@/lib/data/mock-data";
 import {
   allowedBranchIds,
   canAccessBranch,
@@ -20,15 +21,31 @@ export default async function EditNewsPage({
   const { id } = await params;
   const user = await requireCapability(Capability.NEWS_MANAGE);
 
-  const item = await prisma.newsItem.findUnique({ where: { id } });
-  if (!item || !canAccessBranch(user, item.branchId)) notFound();
-
+  let item: any = null;
+  let branches: { id: string; shortName: string }[] = [];
   const allowed = allowedBranchIds(user);
-  const branches = await prisma.branch.findMany({
-    where: allowed === null ? {} : { id: { in: allowed } },
-    orderBy: { orderIndex: "asc" },
-    select: { id: true, shortName: true },
-  });
+
+  if (!isDatabaseConfigured()) {
+    item = MOCK_NEWS.find((n) => n.id === id) ?? MOCK_NEWS[0];
+    branches = MOCK_BRANCHES.map((b) => ({ id: b.id, shortName: b.shortName }));
+  } else {
+    try {
+      const [dbItem, dbBranches] = await Promise.all([
+        prisma.newsItem.findUnique({ where: { id } }),
+        prisma.branch.findMany({
+          where: allowed === null ? {} : { id: { in: allowed } },
+          orderBy: { orderIndex: "asc" },
+          select: { id: true, shortName: true },
+        }),
+      ]);
+      item = dbItem;
+      branches = dbBranches;
+    } catch (err) {
+      console.error("News item query error:", err);
+    }
+  }
+
+  if (!item || !canAccessBranch(user, item.branchId)) notFound();
 
   return (
     <>

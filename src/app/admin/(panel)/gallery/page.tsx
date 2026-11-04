@@ -4,6 +4,7 @@ import { ResourceForm, type FieldSpec } from "@/components/admin/resource-form";
 import { Badge } from "@/components/ui/badge";
 import { Capability } from "@/generated/prisma/enums";
 import { deleteAlbum, saveAlbum } from "@/lib/actions/content";
+import { isDatabaseConfigured, MOCK_ALBUMS, MOCK_BRANCHES } from "@/lib/data/mock-data";
 import { allowedBranchIds, requireCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
@@ -19,21 +20,41 @@ export default async function GalleryAdminPage({
   const { edit } = await searchParams;
   const allowed = allowedBranchIds(user);
 
-  const [branches, albums, editing] = await Promise.all([
-    prisma.branch.findMany({
-      where: allowed === null ? {} : { id: { in: allowed } },
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, shortName: true },
-    }),
-    prisma.galleryAlbum.findMany({
-      orderBy: [{ orderIndex: "asc" }, { createdAt: "desc" }],
-      include: {
-        branch: { select: { shortName: true } },
-        _count: { select: { images: true } },
-      },
-    }),
-    edit ? prisma.galleryAlbum.findUnique({ where: { id: edit } }) : Promise.resolve(null),
-  ]);
+  let branches: { id: string; shortName: string }[] = [];
+  let albums: any[] = [];
+  let editing: any = null;
+
+  if (!isDatabaseConfigured()) {
+    branches = MOCK_BRANCHES.map((b) => ({ id: b.id, shortName: b.shortName }));
+    albums = MOCK_ALBUMS.map((a) => ({
+      ...a,
+      branch: a.branchId === "branch_nellikatte" ? { shortName: "Nellikatte Campus" } : null,
+      _count: { images: a.images.length },
+    }));
+  } else {
+    try {
+      const [dbBranches, dbAlbums, dbEditing] = await Promise.all([
+        prisma.branch.findMany({
+          where: allowed === null ? {} : { id: { in: allowed } },
+          orderBy: { orderIndex: "asc" },
+          select: { id: true, shortName: true },
+        }),
+        prisma.galleryAlbum.findMany({
+          orderBy: [{ orderIndex: "asc" }, { createdAt: "desc" }],
+          include: {
+            branch: { select: { shortName: true } },
+            _count: { select: { images: true } },
+          },
+        }),
+        edit ? prisma.galleryAlbum.findUnique({ where: { id: edit } }) : Promise.resolve(null),
+      ]);
+      branches = dbBranches;
+      albums = dbAlbums;
+      editing = dbEditing;
+    } catch (err) {
+      console.error("Gallery query error:", err);
+    }
+  }
 
   const branchOptions = [
     ...(allowed === null ? [{ value: "", label: "Main site (institution-wide)" }] : []),

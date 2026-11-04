@@ -21,7 +21,7 @@ export function BranchCard({
 
   return (
     <article
-      className="group relative flex flex-col overflow-hidden rounded-xs border border-ink-200/90 bg-white shadow-card transition-all duration-300 ease-out hover:-translate-y-2 hover:border-brand-300 hover:shadow-raise"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-ink-200/90 bg-white shadow-card transition-all duration-300 ease-out hover:-translate-y-2 hover:border-brand-300 hover:shadow-raise"
       style={{ ["--branch-color" as string]: branch.themeColor }}
     >
       <span
@@ -87,7 +87,7 @@ export function BranchCard({
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Link
             href={href}
-            className="inline-flex h-10 items-center gap-2 rounded-sm px-5 text-[0.8rem] font-bold uppercase tracking-wider text-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:opacity-95"
+            className="inline-flex h-10 items-center gap-2 rounded-lg px-5 text-[0.8rem] font-bold uppercase tracking-wider text-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:opacity-95"
             style={{ backgroundColor: branch.themeColor }}
           >
             Visit Campus Site

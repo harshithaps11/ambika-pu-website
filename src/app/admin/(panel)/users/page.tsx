@@ -3,6 +3,7 @@ import { AdminPageHeader, DataTable, EmptyState, Panel } from "@/components/admi
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Role } from "@/generated/prisma/enums";
+import { isDatabaseConfigured } from "@/lib/data/mock-data";
 import { ALL_CAPABILITIES, requireOwner } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { formatDateTime } from "@/lib/utils";
@@ -12,21 +13,71 @@ export const metadata = { title: "Staff accounts" };
 export default async function UsersPage() {
   await requireOwner();
 
-  const users = await prisma.user.findMany({
-    orderBy: [{ role: "asc" }, { name: "asc" }],
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      isActive: true,
-      allBranches: true,
-      lastLoginAt: true,
-      mustChangePassword: true,
-      _count: { select: { capabilities: true } },
-      branchAccess: { select: { branch: { select: { shortName: true } } } },
-    },
-  });
+  type UserRow = {
+    id: string;
+    name: string;
+    email: string;
+    role: Role;
+    isActive: boolean;
+    allBranches: boolean;
+    lastLoginAt: Date | null;
+    mustChangePassword: boolean;
+    _count: { capabilities: number };
+    branchAccess: { branch: { shortName: string } }[];
+  };
+
+  let users: UserRow[] = [];
+  if (!isDatabaseConfigured()) {
+    users = [
+      {
+        id: "mock_owner",
+        name: "Dr. Srikanth Rao (Administrator)",
+        email: "owner@ambikapucollege.edu.in",
+        role: Role.OWNER,
+        isActive: true,
+        allBranches: true,
+        lastLoginAt: new Date(),
+        mustChangePassword: false,
+        _count: { capabilities: 14 },
+        branchAccess: [{ branch: { shortName: "All Campuses" } }],
+      },
+      {
+        id: "mock_office",
+        name: "Administration Office (Staff)",
+        email: "office@ambikapucollege.edu.in",
+        role: Role.COLLEGE_ADMIN,
+        isActive: true,
+        allBranches: false,
+        lastLoginAt: new Date(Date.now() - 86400000),
+        mustChangePassword: false,
+        _count: { capabilities: 5 },
+        branchAccess: [
+          { branch: { shortName: "Nellikatte Campus" } },
+          { branch: { shortName: "Bappalige Campus" } },
+        ],
+      },
+    ];
+  } else {
+    try {
+      users = await prisma.user.findMany({
+        orderBy: [{ role: "asc" }, { name: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isActive: true,
+          allBranches: true,
+          lastLoginAt: true,
+          mustChangePassword: true,
+          _count: { select: { capabilities: true } },
+          branchAccess: { select: { branch: { select: { shortName: true } } } },
+        },
+      });
+    } catch (err) {
+      console.error("Users query error:", err);
+    }
+  }
 
   return (
     <>
