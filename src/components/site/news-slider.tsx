@@ -77,10 +77,11 @@ export const DEFAULT_NEWS_SLIDES: NewsSlideItem[] = [
 ];
 
 const FALLBACK_NEWS_IMAGES = [
-  "/images/campus-1.svg",
-  "/images/campus-2.svg",
-  "/images/campus-3.svg",
-  "/images/campus-4.svg",
+  "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1000&q=80", // Science lab & robotics
+  "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80", // Academic achievers
+  "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1000&q=80", // College campus
+  "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1000&q=80", // Library & books
+  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1000&q=80", // Sports championship
 ];
 
 const INTERVAL_MS = 5000;

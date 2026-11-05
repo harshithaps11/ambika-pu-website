@@ -33,66 +33,94 @@ export default async function NewsItemPage({ params }: Props) {
         title={item.title}
         crumbs={[
           { label: "Home", href: "/" },
-          { label: "News & Notices", href: "/news" },
-          { label: truncate(item.title, 40) },
+          { label: "Notice Board", href: "/news" },
+          { label: truncate(item.title, 35) },
         ]}
       />
 
-      <article className="py-12">
-        <div className="container-site max-w-3xl">
-          <div className="flex flex-wrap items-center gap-3 border-b border-ink-200 pb-4">
-            <Badge tone="brand">{item.category}</Badge>
-            <time
-              dateTime={new Date(item.publishedAt).toISOString()}
-              className="text-[0.8rem] text-ink-500"
-            >
-              Published {formatDate(item.publishedAt)}
-            </time>
-            {item.branch ? (
-              <Link
-                href={branchHref(item.branch.slug)}
-                className="text-[0.8rem] font-semibold text-brand-700 underline underline-offset-4"
+      <article className="py-12 bg-texture-subtle min-h-[75vh]">
+        <div className="container-site max-w-4xl">
+          <div className="rounded-2xl border border-ink-200/90 bg-white p-6 sm:p-10 shadow-card">
+            {/* Meta Bar */}
+            <div className="flex flex-wrap items-center gap-3 border-b border-ink-200/80 pb-5">
+              <Badge tone="brand">{item.category}</Badge>
+              <time
+                dateTime={new Date(item.publishedAt).toISOString()}
+                className="font-sans text-[0.82rem] font-semibold tabular-nums text-ink-600"
               >
-                {item.branch.shortName}
-              </Link>
-            ) : (
-              <span className="text-[0.8rem] text-ink-500">Institution-wide</span>
-            )}
-          </div>
-
-          {item.summary ? (
-            <p className="mt-6 border-l-2 border-gold-500 pl-4 text-[1rem] leading-relaxed text-ink-700">
-              {item.summary}
-            </p>
-          ) : null}
-
-          {item.body ? (
-            <div className="prose-content mt-6">
-              {item.body
-                .split(/\n{2,}/)
-                .filter(Boolean)
-                .map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+                Published {formatDate(item.publishedAt)}
+              </time>
+              {item.branch ? (
+                <Link
+                  href={branchHref(item.branch.slug)}
+                  className="font-semibold text-xs text-brand-700 underline underline-offset-4"
+                >
+                  🏛️ {item.branch.shortName}
+                </Link>
+              ) : (
+                <span className="text-xs font-semibold text-ink-500">🏛️ Institution-wide</span>
+              )}
             </div>
-          ) : null}
 
-          {item.attachmentUrl ? (
-            <a
-              href={item.attachmentUrl}
-              className="mt-7 inline-flex h-10 items-center rounded-sm border border-ink-300 px-4 text-[0.82rem] font-semibold text-ink-800 transition-colors hover:border-brand-700 hover:text-brand-700"
-            >
-              Download attachment
-            </a>
-          ) : null}
+            {/* Featured Photo (if present) */}
+            {item.coverImageUrl ? (
+              <div className="mt-7 overflow-hidden rounded-xl border border-ink-200/80 shadow-xs max-h-[460px]">
+                <img
+                  src={item.coverImageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover max-h-[460px]"
+                />
+              </div>
+            ) : null}
 
-          <div className="mt-10 border-t border-ink-200 pt-5">
-            <Link
-              href="/news"
-              className="text-[0.82rem] font-semibold uppercase tracking-wider text-brand-700 underline underline-offset-4"
-            >
-              ← Back to all notices
-            </Link>
+            {/* Excerpt / Summary */}
+            {item.summary ? (
+              <div className="mt-7 rounded-xl border-l-4 border-gold-500 bg-gold-50/40 p-4 sm:p-5">
+                <p className="text-[1.02rem] font-medium leading-relaxed text-ink-800">
+                  {item.summary}
+                </p>
+              </div>
+            ) : null}
+
+            {/* Article Body */}
+            {item.body ? (
+              <div className="mt-8 space-y-4 text-[0.95rem] leading-relaxed text-ink-700">
+                {item.body
+                  .split(/\n{2,}/)
+                  .filter(Boolean)
+                  .map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+              </div>
+            ) : null}
+
+            {/* Official Attachment Button */}
+            {item.attachmentUrl ? (
+              <div className="mt-8 pt-6 border-t border-ink-150">
+                <a
+                  href={item.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-colors hover:bg-brand-800"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Download Official Circular (PDF)</span>
+                </a>
+              </div>
+            ) : null}
+
+            {/* Back Link */}
+            <div className="mt-10 border-t border-ink-150 pt-6">
+              <Link
+                href="/news"
+                className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-700 underline underline-offset-4 hover:text-brand-900"
+              >
+                <span>←</span>
+                <span>Back to all bulletins &amp; notices</span>
+              </Link>
+            </div>
           </div>
         </div>
       </article>

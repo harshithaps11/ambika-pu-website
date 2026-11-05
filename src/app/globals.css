@@ -51,35 +51,26 @@
 
 /* ---------------------------------------------------------------------------
    Textures & Background Patterns
-   Academic textures and subtle patterns for rich depth.
+   Clean, authentic institutional backdrops without artificial dotted matrices.
 --------------------------------------------------------------------------- */
 .bg-texture-subtle {
   background-color: #faf9f6;
-  background-image: 
-    radial-gradient(circle at 10% 15%, rgba(122, 31, 43, 0.025) 0%, transparent 45%),
-    radial-gradient(circle at 90% 85%, rgba(201, 162, 39, 0.035) 0%, transparent 45%),
-    radial-gradient(#d6d1c7 1.1px, transparent 1.1px);
-  background-size: 100% 100%, 100% 100%, 22px 22px;
+  background-image: linear-gradient(180deg, #ffffff 0%, #faf9f6 100%);
 }
 
 .bg-texture-dots {
-  background-image: radial-gradient(rgba(46, 43, 41, 0.075) 1.2px, transparent 1.2px);
-  background-size: 22px 22px;
+  background-color: #f7f6f3;
+  background-image: linear-gradient(180deg, #ffffff 0%, #f7f6f3 100%);
 }
 
 .bg-texture-dark {
   background-image: 
-    radial-gradient(circle at 20% 30%, rgba(201, 162, 39, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
-    radial-gradient(rgba(242, 224, 164, 0.09) 1.2px, transparent 1.2px);
-  background-size: 100% 100%, 100% 100%, 24px 24px;
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.15) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
 }
 
 .bg-texture-grid {
-  background-image: 
-    linear-gradient(to right, rgba(27, 26, 24, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(27, 26, 24, 0.03) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-color: #ffffff;
 }
 
 /* ---------------------------------------------------------------------------
